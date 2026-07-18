@@ -10,7 +10,7 @@ class ScaledDotProductAttention(nn.Module):
         
         # apply causal mask if provided
         if mask is not None:
-            scores = scores.masked_fill(mask == 0, -1e9)
+            scores = scores.masked_fill(mask == 0, float('-inf'))
             
         attn = torch.softmax(scores, dim=-1)
         return torch.matmul(attn, v)

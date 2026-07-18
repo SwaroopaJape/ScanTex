@@ -13,7 +13,7 @@ from pathlib import Path
 from tokenizers import Tokenizer, models, trainers, pre_tokenizers
 
 # pyrefly: ignore [missing-import]
-from latex_lexer import Token, TokenType, lex
+from src.data.latex_lexer import Token, TokenType, lex
 
 class HybridTokenizer:
     # reserved control tokens
