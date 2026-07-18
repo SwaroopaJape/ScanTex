@@ -12,9 +12,13 @@ from omegaconf import DictConfig, OmegaConf
 project_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(project_root))
 
+# pyrefly: ignore [missing-import]
 from src.data.dataset import MathDataset
+# pyrefly: ignore [missing-import]
 from src.data.tokenizer import HybridTokenizer
+# pyrefly: ignore [missing-import]
 from src.models.encoder import VisionEncoder
+# pyrefly: ignore [missing-import]
 from src.models.decoder import LatexDecoder
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")

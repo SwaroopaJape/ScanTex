@@ -4,3 +4,4 @@ hydra-core
 matplotlib
 torchvision
 tokenizers
+streamlit
