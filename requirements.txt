@@ -1,0 +1,6 @@
+torch
+einops
+hydra-core
+matplotlib
+torchvision
+tokenizers
