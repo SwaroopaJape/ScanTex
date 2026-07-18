@@ -43,3 +43,6 @@ venv.bak/
 /data/
 *.pt
 *.pth
+
+# Hydra Outputs
+outputs/

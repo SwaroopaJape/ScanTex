@@ -52,8 +52,8 @@ class MathDataset(Dataset):
     def __getitem__(self, idx):
         img_path = os.path.join(self.temp_dir, f"{idx}.png")
         
-        # load raw image to tensor (C, H, W)
-        img = read_image(img_path)
+        # load raw image to tensor (C, H, W) and drop the Alpha channel (RGBA -> RGB)
+        img = read_image(img_path)[:3, :, :]
         
         # apply affine transform
         img = self.transform(img)
