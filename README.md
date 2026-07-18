@@ -1,4 +1,4 @@
-# ScanTeX 📷
+# ScanTeX 
 
 ScanTeX is a multi-modal Machine Learning application designed to translate rasterized images of mathematical equations directly into compilable LaTeX strings. 
 
