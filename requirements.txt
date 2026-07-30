@@ -5,3 +5,5 @@ matplotlib
 torchvision
 tokenizers
 streamlit
+arxiv
+tqdm
