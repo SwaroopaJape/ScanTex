@@ -35,6 +35,8 @@ def extract_math_blocks(tex_content: str) -> list[str]:
             
     return cleaned
 
+from src.data.string_generator import parse_with_lark
+
 def main():
     out_dir = Path("data/scraped")
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -90,7 +92,27 @@ def main():
                                         
                                         # update progress bar
                                         before = len(all_equations)
-                                        all_equations.update(eqs)
+                                        
+                                        # ONLY keep equations that our grammar can parse perfectly
+                                        for raw_eq in eqs:
+                                            if raw_eq not in all_equations:
+                                                # Strip structural/formatting tags that our parser doesn't need
+                                                eq = re.sub(r'\\begin\{[^}]+\}', '', raw_eq)
+                                                eq = re.sub(r'\\end\{[^}]+\}', '', eq)
+                                                eq = re.sub(r'\\label\{[^}]+\}', '', eq)
+                                                eq = re.sub(r'\\ref\{[^}]+\}', '', eq)
+                                                eq = re.sub(r'\\eqref\{[^}]+\}', '', eq)
+                                                eq = re.sub(r'\\cite\{[^}]+\}', '', eq)
+                                                eq = re.sub(r'\\hspace\{[^}]+\}', '', eq)
+                                                eq = re.sub(r'\\vspace\{[^}]+\}', '', eq)
+                                                
+                                                tree = parse_with_lark(eq)
+                                                if tree is not None:
+                                                    # We save the cleaned equation so the analysis phase has 0 formatting noise
+                                                    all_equations.add(eq)
+                                                    if len(all_equations) >= target_count:
+                                                        break
+                                        
                                         added = len(all_equations) - before
                                         if added > 0:
                                             # make sure we don't exceed the target count on the progress bar visually

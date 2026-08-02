@@ -9,6 +9,86 @@ are what get forwarded to BPE later.
 from enum import Enum, auto
 from dataclasses import dataclass
 
+# all latex commands that our grammar.lark knows about
+# any equation containing a command NOT in this set will be filtered out
+# before being passed to the lark parser
+KNOWN_COMMANDS: set[str] = {
+    # greek lower
+    "\\alpha", "\\beta", "\\gamma", "\\delta", "\\epsilon", "\\varepsilon",
+    "\\zeta", "\\eta", "\\theta", "\\vartheta", "\\iota", "\\kappa",
+    "\\lambda", "\\mu", "\\nu", "\\xi", "\\pi", "\\varpi", "\\rho", "\\varrho",
+    "\\sigma", "\\varsigma", "\\tau", "\\upsilon", "\\phi", "\\varphi",
+    "\\chi", "\\psi", "\\omega",
+    # greek upper
+    "\\Gamma", "\\Delta", "\\Theta", "\\Lambda", "\\Xi", "\\Pi",
+    "\\Sigma", "\\Upsilon", "\\Phi", "\\Psi", "\\Omega",
+    # constants
+    "\\infty", "\\emptyset",
+    # relations / arrows
+    "\\leq", "\\geq", "\\neq", "\\approx", "\\equiv",
+    "\\in", "\\notin", "\\subset", "\\subseteq", "\\supset", "\\supseteq",
+    "\\sim", "\\simeq", "\\cong", "\\propto", "\\perp", "\\parallel",
+    "\\ll", "\\gg", "\\prec", "\\succ", "\\preceq", "\\succeq",
+    "\\longrightarrow", "\\rightarrow", "\\leftarrow",
+    "\\Rightarrow", "\\Leftarrow", "\\Longrightarrow",
+    "\\leftrightarrow", "\\Leftrightarrow",
+    "\\mapsto", "\\longmapsto", "\\hookrightarrow", "\\twoheadrightarrow",
+    "\\to", "\\colon",
+    # arithmetic / binary ops
+    "\\cdot", "\\times", "\\otimes", "\\oplus", "\\circ",
+    "\\wedge", "\\vee", "\\ast",
+    # fractions / roots
+    "\\frac", "\\dfrac", "\\tfrac", "\\cfrac", "\\sqrt",
+    # delimiters
+    "\\left", "\\right", "\\lfloor", "\\rfloor", "\\lceil", "\\rceil",
+    "\\langle", "\\rangle", "\\mid",
+    # big operators
+    "\\sum", "\\prod", "\\int", "\\iint", "\\iiint", "\\oint",
+    "\\lim", "\\varlimsup", "\\varliminf",
+    "\\bigoplus", "\\bigotimes", "\\bigcup", "\\bigcap",
+    "\\bigvee", "\\bigwedge", "\\coprod",
+    # set ops
+    "\\cup", "\\cap", "\\setminus", "\\sqcup", "\\sqcap", "\\uplus",
+    # logic
+    "\\forall", "\\exists", "\\nexists", "\\neg", "\\lnot",
+    "\\land", "\\lor", "\\iff",
+    # accents
+    "\\hat", "\\bar", "\\tilde", "\\vec", "\\dot", "\\ddot", "\\dddot",
+    "\\overline", "\\underline", "\\widehat", "\\widetilde",
+    "\\overrightarrow", "\\overleftarrow",
+    # functions
+    "\\sin", "\\cos", "\\tan", "\\cot", "\\sec", "\\csc",
+    "\\arcsin", "\\arccos", "\\arctan",
+    "\\sinh", "\\cosh", "\\tanh", "\\coth",
+    "\\log", "\\ln", "\\exp", "\\det", "\\max", "\\min",
+    "\\sup", "\\inf", "\\gcd", "\\lcm", "\\deg", "\\dim",
+    "\\ker", "\\hom", "\\arg", "\\sgn", "\\tr", "\\rank",
+    # binomials
+    "\\binom", "\\dbinom",
+    # fonts
+    "\\mathbb", "\\mathcal", "\\mathbf", "\\mathrm",
+    "\\mathsf", "\\mathtt", "\\mathfrak",
+    # text
+    "\\text",
+    # partial
+    "\\partial",
+    # spacing (safe to see, carry no semantic meaning)
+    "\\,", "\\;", "\\:", "\\!", "\\quad", "\\qquad",
+    # misc structural that appear but are benign
+    "\\pm", "\\mp", "\\div", "\\not",
+    # align newline (treated as ESCAPED_CHAR by lexer)
+    "\\\\",
+}
+
+def has_unknown_commands(latex: str) -> bool:
+    # returns true if the equation contains any latex command not in our whitelist
+    # uses the lexer to correctly identify command boundaries
+    for tok in lex(latex):
+        if tok.type == TokenType.COMMAND and tok.value not in KNOWN_COMMANDS:
+            return True
+    return False
+
+
 class TokenType(Enum):
     # LaTeX structural tokens
     COMMAND      = auto()  # \alpha, \frac, \sqrt

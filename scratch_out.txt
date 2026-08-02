@@ -1,0 +1,559 @@
+NEWLINE \\
+ALIGN_SEP &
+__IGNORE_0 \s+
+EQUAL =
+__ANON_0 :=
+LESSTHAN <
+MORETHAN >
+__ANON_1 \leq
+__ANON_2 \geq
+__ANON_3 \neq
+__ANON_4 \approx
+__ANON_5 \equiv
+__ANON_6 \in
+__ANON_7 \notin
+__ANON_8 \subset
+__ANON_9 \subseteq
+__ANON_10 \supset
+__ANON_11 \supseteq
+__ANON_12 \sim
+__ANON_13 \simeq
+__ANON_14 \cong
+__ANON_15 \propto
+__ANON_16 \perp
+__ANON_17 \parallel
+__ANON_18 \ll
+__ANON_19 \gg
+__ANON_20 \prec
+__ANON_21 \succ
+__ANON_22 \preceq
+__ANON_23 \succeq
+__ANON_24 \longrightarrow
+__ANON_25 \rightarrow
+__ANON_26 \leftarrow
+__ANON_27 \Rightarrow
+__ANON_28 \Leftarrow
+__ANON_29 \leftrightarrow
+__ANON_30 \Leftrightarrow
+__ANON_31 \mapsto
+__ANON_32 \longmapsto
+__ANON_33 \hookrightarrow
+__ANON_34 \twoheadrightarrow
+__ANON_35 \to
+__ANON_36 \colon
+PLUS +
+MINUS -
+__ANON_37 \pm
+__ANON_38 \mp
+__ANON_39 \cdot
+__ANON_40 \times
+__ANON_41 \div
+__ANON_42 \otimes
+__ANON_43 \oplus
+__ANON_44 \circ
+__ANON_45 \wedge
+__ANON_46 \vee
+__ANON_47 \ast
+__ANON_48 [a-zA-Z]
+__ANON_49 [0-9]
+__ANON_50 \alpha
+__ANON_51 \beta
+__ANON_52 \gamma
+__ANON_53 \delta
+__ANON_54 \epsilon
+__ANON_55 \varepsilon
+__ANON_56 \zeta
+__ANON_57 \eta
+__ANON_58 \theta
+__ANON_59 \vartheta
+__ANON_60 \iota
+__ANON_61 \kappa
+__ANON_62 \lambda
+__ANON_63 \mu
+__ANON_64 \nu
+__ANON_65 \xi
+__ANON_66 \pi
+__ANON_67 \varpi
+__ANON_68 \rho
+__ANON_69 \varrho
+__ANON_70 \sigma
+__ANON_71 \varsigma
+__ANON_72 \tau
+__ANON_73 \upsilon
+__ANON_74 \phi
+__ANON_75 \varphi
+__ANON_76 \chi
+__ANON_77 \psi
+__ANON_78 \omega
+__ANON_79 \Gamma
+__ANON_80 \Delta
+__ANON_81 \Theta
+__ANON_82 \Lambda
+__ANON_83 \Xi
+__ANON_84 \Pi
+__ANON_85 \Sigma
+__ANON_86 \Upsilon
+__ANON_87 \Phi
+__ANON_88 \Psi
+__ANON_89 \Omega
+__ANON_90 \infty
+__ANON_91 \emptyset
+E e
+__ANON_92 0
+__ANON_93 1
+__ANON_94 ^{
+RBRACE }
+__ANON_95 _{
+__ANON_96 }^{
+CIRCUMFLEX ^
+UNDERSCORE _
+__ANON_97 \frac{
+__ANON_98 }{
+__ANON_99 \dfrac{
+__ANON_100 \tfrac{
+__ANON_101 \cfrac{
+__ANON_102 \sqrt{
+__ANON_103 \sqrt[
+__ANON_104 ]{
+__ANON_105 \left(
+__ANON_106 \right)
+LBRACE {
+__ANON_107 \sin
+__ANON_108 \cos
+__ANON_109 \tan
+__ANON_110 \cot
+__ANON_111 \sec
+__ANON_112 \csc
+__ANON_113 \arcsin
+__ANON_114 \arccos
+__ANON_115 \arctan
+__ANON_116 \sinh
+__ANON_117 \cosh
+__ANON_118 \tanh
+__ANON_119 \coth
+__ANON_120 \log
+__ANON_121 \ln
+__ANON_122 \exp
+__ANON_123 \det
+__ANON_124 \max
+__ANON_125 \min
+__ANON_126 \sup
+__ANON_127 \inf
+__ANON_128 \gcd
+__ANON_129 \lcm
+__ANON_130 \deg
+__ANON_131 \dim
+__ANON_132 \ker
+__ANON_133 \hom
+__ANON_134 \arg
+__ANON_135 \sgn
+__ANON_136 \tr
+__ANON_137 \rank
+__ANON_138 \sum_{
+__ANON_139 \sum
+__ANON_140 \prod_{
+__ANON_141 \prod
+__ANON_142 \int_{
+__ANON_143 \,
+D d
+__ANON_144 \int
+__ANON_145 \iint
+__ANON_146 \iiint
+__ANON_147 \oint_{
+__ANON_148 \oint
+__ANON_149 \lim_{
+__ANON_150 \varlimsup
+__ANON_151 \varliminf
+__ANON_152 \bigoplus
+__ANON_153 \bigotimes
+__ANON_154 \bigcup
+__ANON_155 \bigcap
+__ANON_156 \bigvee
+__ANON_157 \bigwedge
+__ANON_158 \coprod
+__ANON_159 \left[
+__ANON_160 \right]
+__ANON_161 \left|
+__ANON_162 \right|
+__ANON_163 \left\|
+__ANON_164 \right\|
+__ANON_165 \left\{
+__ANON_166 \right\}
+__ANON_167 \left\lfloor
+__ANON_168 \right\rfloor
+__ANON_169 \left\lceil
+__ANON_170 \right\rceil
+__ANON_171 \left\langle
+__ANON_172 \right\rangle
+LPAR (
+RPAR )
+LSQB [
+RSQB ]
+__ANON_173 \hat{
+__ANON_174 \bar{
+__ANON_175 \tilde{
+__ANON_176 \vec{
+__ANON_177 \dot{
+__ANON_178 \ddot{
+__ANON_179 \dddot{
+__ANON_180 \overline{
+__ANON_181 \underline{
+__ANON_182 \widehat{
+__ANON_183 \widetilde{
+__ANON_184 \overrightarrow{
+__ANON_185 \overleftarrow{
+__ANON_186 \binom{
+__ANON_187 \dbinom{
+__ANON_188 \mathbb{
+__ANON_189 \mathcal{
+__ANON_190 \mathbf{
+__ANON_191 \mathrm{
+__ANON_192 \mathrm{d}
+__ANON_193 \mathrm{e}
+__ANON_194 \mathsf{
+__ANON_195 \mathtt{
+__ANON_196 \mathfrak{
+__ANON_197 \mid
+__ANON_198 \{
+__ANON_199 \}
+__ANON_200 \cup
+__ANON_201 \cap
+__ANON_202 \setminus
+__ANON_203 \sqcup
+__ANON_204 \sqcap
+__ANON_205 \uplus
+__ANON_206 \forall
+COMMA ,
+__ANON_207 \exists
+COLON :
+__ANON_208 \nexists
+__ANON_209 \Longrightarrow
+__ANON_210 \iff
+__ANON_211 \neg
+__ANON_212 \lnot
+__ANON_213 \land
+__ANON_214 \lor
+__ANON_215 \partial
+__ANON_216 \partial^2
+__ANON_217 ^2}
+__ANON_218 \text{if}
+__ANON_219 \text{for}
+__ANON_220 \text{where}
+__ANON_221 \text{and}
+__ANON_222 \text{
+__ANON_223 [^}]+
+start -> ['expr']
+start -> ['relation']
+start -> ['set_expr']
+start -> ['logic_expr']
+start -> ['align_block']
+align_block -> ['align_row', '__align_block_star_0']
+align_block -> ['align_row']
+align_row -> ['expr', '__align_row_star_1']
+align_row -> ['expr']
+relation -> ['expr', 'rel_op', 'expr']
+relation -> ['expr', 'rel_op', 'expr', 'rel_op', 'expr']
+rel_op -> ['EQUAL']
+rel_op -> ['__ANON_0']
+rel_op -> ['LESSTHAN']
+rel_op -> ['MORETHAN']
+rel_op -> ['__ANON_1']
+rel_op -> ['__ANON_2']
+rel_op -> ['__ANON_3']
+rel_op -> ['__ANON_4']
+rel_op -> ['__ANON_5']
+rel_op -> ['__ANON_6']
+rel_op -> ['__ANON_7']
+rel_op -> ['__ANON_8']
+rel_op -> ['__ANON_9']
+rel_op -> ['__ANON_10']
+rel_op -> ['__ANON_11']
+rel_op -> ['__ANON_12']
+rel_op -> ['__ANON_13']
+rel_op -> ['__ANON_14']
+rel_op -> ['__ANON_15']
+rel_op -> ['__ANON_16']
+rel_op -> ['__ANON_17']
+rel_op -> ['__ANON_18']
+rel_op -> ['__ANON_19']
+rel_op -> ['__ANON_20']
+rel_op -> ['__ANON_21']
+rel_op -> ['__ANON_22']
+rel_op -> ['__ANON_23']
+rel_op -> ['__ANON_24']
+rel_op -> ['__ANON_25']
+rel_op -> ['__ANON_26']
+rel_op -> ['__ANON_27']
+rel_op -> ['__ANON_28']
+rel_op -> ['__ANON_29']
+rel_op -> ['__ANON_30']
+rel_op -> ['__ANON_31']
+rel_op -> ['__ANON_32']
+rel_op -> ['__ANON_33']
+rel_op -> ['__ANON_34']
+rel_op -> ['__ANON_35']
+rel_op -> ['__ANON_36']
+expr -> ['term']
+expr -> ['term', 'PLUS', 'expr']
+expr -> ['term', 'MINUS', 'expr']
+expr -> ['term', '__ANON_37', 'expr']
+expr -> ['term', '__ANON_38', 'expr']
+expr -> ['unary_op', 'term']
+unary_op -> ['MINUS']
+unary_op -> ['PLUS']
+unary_op -> ['__ANON_37']
+unary_op -> ['__ANON_38']
+term -> ['factor']
+term -> ['factor', '__ANON_39', 'term']
+term -> ['factor', '__ANON_40', 'term']
+term -> ['factor', '__ANON_41', 'term']
+term -> ['factor', '__ANON_42', 'term']
+term -> ['factor', '__ANON_43', 'term']
+term -> ['factor', '__ANON_44', 'term']
+term -> ['factor', '__ANON_45', 'term']
+term -> ['factor', '__ANON_46', 'term']
+term -> ['factor', '__ANON_47', 'term']
+term -> ['factor', 'factor']
+factor -> ['atom']
+factor -> ['scripted']
+factor -> ['frac']
+factor -> ['sqrt']
+factor -> ['func_call']
+factor -> ['big_op']
+factor -> ['delimited']
+factor -> ['accent']
+factor -> ['binom']
+factor -> ['partial_deriv']
+factor -> ['text_cond']
+atom -> ['variable']
+atom -> ['number']
+atom -> ['greek']
+atom -> ['constant']
+atom -> ['styled_atom']
+variable -> ['__ANON_48']
+digit -> ['__ANON_49']
+number -> ['__number_plus_2']
+greek -> ['__ANON_50']
+greek -> ['__ANON_51']
+greek -> ['__ANON_52']
+greek -> ['__ANON_53']
+greek -> ['__ANON_54']
+greek -> ['__ANON_55']
+greek -> ['__ANON_56']
+greek -> ['__ANON_57']
+greek -> ['__ANON_58']
+greek -> ['__ANON_59']
+greek -> ['__ANON_60']
+greek -> ['__ANON_61']
+greek -> ['__ANON_62']
+greek -> ['__ANON_63']
+greek -> ['__ANON_64']
+greek -> ['__ANON_65']
+greek -> ['__ANON_66']
+greek -> ['__ANON_67']
+greek -> ['__ANON_68']
+greek -> ['__ANON_69']
+greek -> ['__ANON_70']
+greek -> ['__ANON_71']
+greek -> ['__ANON_72']
+greek -> ['__ANON_73']
+greek -> ['__ANON_74']
+greek -> ['__ANON_75']
+greek -> ['__ANON_76']
+greek -> ['__ANON_77']
+greek -> ['__ANON_78']
+greek -> ['__ANON_79']
+greek -> ['__ANON_80']
+greek -> ['__ANON_81']
+greek -> ['__ANON_82']
+greek -> ['__ANON_83']
+greek -> ['__ANON_84']
+greek -> ['__ANON_85']
+greek -> ['__ANON_86']
+greek -> ['__ANON_87']
+greek -> ['__ANON_88']
+greek -> ['__ANON_89']
+constant -> ['__ANON_90']
+constant -> ['__ANON_66']
+constant -> ['__ANON_91']
+constant -> ['E']
+constant -> ['__ANON_92']
+constant -> ['__ANON_93']
+scripted -> ['scriptable', '__ANON_94', 'expr', 'RBRACE']
+scripted -> ['scriptable', '__ANON_95', 'expr', 'RBRACE']
+scripted -> ['scriptable', '__ANON_95', 'expr', '__ANON_96', 'expr', 'RBRACE']
+scripted -> ['scriptable', 'CIRCUMFLEX', 'atom']
+scripted -> ['scriptable', 'UNDERSCORE', 'atom']
+scriptable -> ['variable']
+scriptable -> ['number']
+scriptable -> ['greek']
+scriptable -> ['constant']
+scriptable -> ['styled_atom']
+scriptable -> ['delimited']
+scriptable -> ['func_call']
+scriptable -> ['accent']
+frac -> ['__ANON_97', 'expr', '__ANON_98', 'expr', 'RBRACE']
+frac -> ['__ANON_99', 'expr', '__ANON_98', 'expr', 'RBRACE']
+frac -> ['__ANON_100', 'expr', '__ANON_98', 'expr', 'RBRACE']
+frac -> ['__ANON_101', 'expr', '__ANON_98', 'expr', 'RBRACE']
+sqrt -> ['__ANON_102', 'expr', 'RBRACE']
+sqrt -> ['__ANON_103', 'number', '__ANON_104', 'expr', 'RBRACE']
+func_call -> ['func_name', '__ANON_105', 'expr', '__ANON_106']
+func_call -> ['func_name', 'LBRACE', 'atom', 'RBRACE']
+func_call -> ['func_name', 'atom']
+func_name -> ['__ANON_107']
+func_name -> ['__ANON_108']
+func_name -> ['__ANON_109']
+func_name -> ['__ANON_110']
+func_name -> ['__ANON_111']
+func_name -> ['__ANON_112']
+func_name -> ['__ANON_113']
+func_name -> ['__ANON_114']
+func_name -> ['__ANON_115']
+func_name -> ['__ANON_116']
+func_name -> ['__ANON_117']
+func_name -> ['__ANON_118']
+func_name -> ['__ANON_119']
+func_name -> ['__ANON_120']
+func_name -> ['__ANON_121']
+func_name -> ['__ANON_122']
+func_name -> ['__ANON_123']
+func_name -> ['__ANON_124']
+func_name -> ['__ANON_125']
+func_name -> ['__ANON_126']
+func_name -> ['__ANON_127']
+func_name -> ['__ANON_128']
+func_name -> ['__ANON_129']
+func_name -> ['__ANON_130']
+func_name -> ['__ANON_131']
+func_name -> ['__ANON_132']
+func_name -> ['__ANON_133']
+func_name -> ['__ANON_134']
+func_name -> ['__ANON_135']
+func_name -> ['__ANON_136']
+func_name -> ['__ANON_137']
+big_op -> ['summation']
+big_op -> ['product']
+big_op -> ['integral']
+big_op -> ['limit']
+big_op -> ['big_generic']
+summation -> ['__ANON_138', 'sub_assign', '__ANON_96', 'expr', 'RBRACE', 'expr']
+summation -> ['__ANON_138', 'sub_assign', 'RBRACE', 'expr']
+summation -> ['__ANON_139', 'expr']
+product -> ['__ANON_140', 'sub_assign', '__ANON_96', 'expr', 'RBRACE', 'expr']
+product -> ['__ANON_140', 'sub_assign', 'RBRACE', 'expr']
+product -> ['__ANON_141', 'expr']
+integral -> ['__ANON_142', 'expr', '__ANON_96', 'expr', 'RBRACE', 'expr', '__ANON_143', 'D', 'variable']
+integral -> ['__ANON_142', 'expr', '__ANON_96', 'expr', 'RBRACE', 'expr', 'D', 'variable']
+integral -> ['__ANON_144', 'expr', '__ANON_143', 'D', 'variable']
+integral -> ['__ANON_144', 'expr', 'D', 'variable']
+integral -> ['__ANON_145', 'expr', '__ANON_143', 'D', 'variable', '__ANON_143', 'D', 'variable']
+integral -> ['__ANON_146', 'expr', '__ANON_143', 'D', 'variable', '__ANON_143', 'D', 'variable', '__ANON_143', 'D', 'variable']
+integral -> ['__ANON_147', 'expr', 'RBRACE', 'expr', '__ANON_143', 'D', 'variable']
+integral -> ['__ANON_148', 'expr', '__ANON_143', 'D', 'variable']
+limit -> ['__ANON_149', 'variable', '__ANON_35', 'expr', 'RBRACE', 'expr']
+limit -> ['__ANON_149', 'variable', '__ANON_35', 'constant', 'RBRACE', 'expr']
+limit -> ['__ANON_149', 'greek', '__ANON_35', 'expr', 'RBRACE', 'expr']
+limit -> ['__ANON_150', 'expr']
+limit -> ['__ANON_151', 'expr']
+big_generic -> ['__ANON_152', 'expr']
+big_generic -> ['__ANON_153', 'expr']
+big_generic -> ['__ANON_154', 'expr']
+big_generic -> ['__ANON_155', 'expr']
+big_generic -> ['__ANON_156', 'expr']
+big_generic -> ['__ANON_157', 'expr']
+big_generic -> ['__ANON_158', 'expr']
+sub_assign -> ['variable', 'EQUAL', 'expr']
+sub_assign -> ['variable', 'EQUAL', 'number']
+sub_assign -> ['greek', 'EQUAL', 'expr']
+sub_assign -> ['greek', 'EQUAL', 'number']
+delimited -> ['__ANON_105', 'expr', '__ANON_106']
+delimited -> ['__ANON_159', 'expr', '__ANON_160']
+delimited -> ['__ANON_161', 'expr', '__ANON_162']
+delimited -> ['__ANON_163', 'expr', '__ANON_164']
+delimited -> ['__ANON_165', 'expr', '__ANON_166']
+delimited -> ['__ANON_167', 'expr', '__ANON_168']
+delimited -> ['__ANON_169', 'expr', '__ANON_170']
+delimited -> ['__ANON_171', 'expr', '__ANON_172']
+delimited -> ['LPAR', 'expr', 'RPAR']
+delimited -> ['LSQB', 'expr', 'RSQB']
+accent -> ['__ANON_173', 'atom', 'RBRACE']
+accent -> ['__ANON_174', 'atom', 'RBRACE']
+accent -> ['__ANON_175', 'atom', 'RBRACE']
+accent -> ['__ANON_176', 'atom', 'RBRACE']
+accent -> ['__ANON_177', 'atom', 'RBRACE']
+accent -> ['__ANON_178', 'atom', 'RBRACE']
+accent -> ['__ANON_179', 'atom', 'RBRACE']
+accent -> ['__ANON_180', 'expr', 'RBRACE']
+accent -> ['__ANON_181', 'expr', 'RBRACE']
+accent -> ['__ANON_182', 'expr', 'RBRACE']
+accent -> ['__ANON_183', 'expr', 'RBRACE']
+accent -> ['__ANON_184', 'expr', 'RBRACE']
+accent -> ['__ANON_185', 'expr', 'RBRACE']
+binom -> ['__ANON_186', 'expr', '__ANON_98', 'expr', 'RBRACE']
+binom -> ['__ANON_187', 'expr', '__ANON_98', 'expr', 'RBRACE']
+styled_atom -> ['mathbb']
+styled_atom -> ['mathcal']
+styled_atom -> ['mathbf']
+styled_atom -> ['mathrm']
+styled_atom -> ['mathsf']
+styled_atom -> ['mathtt']
+styled_atom -> ['mathfrak']
+mathbb -> ['__ANON_188', 'variable', 'RBRACE']
+mathcal -> ['__ANON_189', 'variable', 'RBRACE']
+mathbf -> ['__ANON_190', 'variable', 'RBRACE']
+mathbf -> ['__ANON_190', 'greek', 'RBRACE']
+mathrm -> ['__ANON_191', 'variable', 'RBRACE']
+mathrm -> ['__ANON_192']
+mathrm -> ['__ANON_193']
+mathsf -> ['__ANON_194', 'variable', 'RBRACE']
+mathtt -> ['__ANON_195', 'variable', 'RBRACE']
+mathfrak -> ['__ANON_196', 'variable', 'RBRACE']
+set_expr -> ['expr', 'set_op', 'expr']
+set_expr -> ['expr', '__ANON_6', 'styled_atom']
+set_expr -> ['expr', '__ANON_6', 'expr']
+set_expr -> ['expr', '__ANON_7', 'expr']
+set_expr -> ['expr', '__ANON_8', 'expr']
+set_expr -> ['expr', '__ANON_9', 'expr']
+set_expr -> ['__ANON_165', 'expr', '__ANON_197', 'expr', '__ANON_166']
+set_expr -> ['__ANON_198', 'expr', '__ANON_197', 'expr', '__ANON_199']
+set_expr -> ['styled_atom', 'set_op', 'styled_atom']
+set_op -> ['__ANON_200']
+set_op -> ['__ANON_201']
+set_op -> ['__ANON_202']
+set_op -> ['__ANON_154']
+set_op -> ['__ANON_155']
+set_op -> ['__ANON_203']
+set_op -> ['__ANON_204']
+set_op -> ['__ANON_205']
+logic_expr -> ['__ANON_206', 'variable', '__ANON_6', 'styled_atom', 'COMMA', 'expr']
+logic_expr -> ['__ANON_206', 'variable', '__ANON_6', 'expr', 'COMMA', 'expr']
+logic_expr -> ['__ANON_207', 'variable', '__ANON_6', 'styled_atom', 'COLON', 'expr']
+logic_expr -> ['__ANON_207', 'variable', '__ANON_6', 'expr', 'COLON', 'expr']
+logic_expr -> ['__ANON_208', 'variable', '__ANON_6', 'expr', 'COLON', 'expr']
+logic_expr -> ['expr', '__ANON_27', 'expr']
+logic_expr -> ['expr', '__ANON_209', 'expr']
+logic_expr -> ['expr', '__ANON_210', 'expr']
+logic_expr -> ['expr', '__ANON_30', 'expr']
+logic_expr -> ['__ANON_211', 'delimited']
+logic_expr -> ['__ANON_212', 'delimited']
+logic_expr -> ['expr', '__ANON_213', 'expr']
+logic_expr -> ['expr', '__ANON_214', 'expr']
+logic_expr -> ['expr', '__ANON_45', 'expr']
+logic_expr -> ['expr', '__ANON_46', 'expr']
+partial_deriv -> ['__ANON_97', '__ANON_215', 'expr', '__ANON_98', '__ANON_215', 'variable', 'RBRACE']
+partial_deriv -> ['__ANON_97', '__ANON_215', 'expr', '__ANON_98', '__ANON_215', 'greek', 'RBRACE']
+partial_deriv -> ['__ANON_97', '__ANON_216', 'expr', '__ANON_98', '__ANON_215', 'variable', '__ANON_217']
+partial_deriv -> ['__ANON_97', '__ANON_216', 'expr', '__ANON_98', '__ANON_215', 'variable', '__ANON_215', 'variable', 'RBRACE']
+partial_deriv -> ['__ANON_97', '__ANON_216', 'expr', '__ANON_98', '__ANON_215', 'greek', '__ANON_215', 'greek', 'RBRACE']
+text_cond -> ['expr', '__ANON_218', 'expr', 'rel_op', 'expr']
+text_cond -> ['expr', '__ANON_219', 'variable', '__ANON_6', 'styled_atom']
+text_cond -> ['expr', '__ANON_220', 'relation']
+text_cond -> ['expr', '__ANON_221', 'expr']
+text_cond -> ['expr', '__ANON_222', '__ANON_223', 'RBRACE', 'expr']
+__align_block_star_0 -> ['NEWLINE', 'align_row']
+__align_block_star_0 -> ['__align_block_star_0', 'NEWLINE', 'align_row']
+__align_row_star_1 -> ['ALIGN_SEP', 'expr']
+__align_row_star_1 -> ['__align_row_star_1', 'ALIGN_SEP', 'expr']
+__number_plus_2 -> ['digit']
+__number_plus_2 -> ['__number_plus_2', 'digit']

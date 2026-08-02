@@ -47,6 +47,30 @@ def load_grammar(file_path: str):
 # load the default grammar initially so imports of this module still work
 load_grammar("src/data/grammar.py")
 
+# lark parser (optional, only loaded when explicitly requested)
+_lark_parser = None
+
+def load_lark_parser(lark_file_path: str = "src/data/grammar.lark"):
+    # load the lark grammar and build an earley parser
+    # this is used for parsing scraped equations, not for generation
+    global _lark_parser
+    from lark import Lark
+    with open(lark_file_path, "r") as f:
+        grammar_text = f.read()
+    _lark_parser = Lark(grammar_text, parser="earley", ambiguity="resolve")
+    return _lark_parser
+
+def parse_with_lark(latex: str):
+    # parse a raw latex string and return a lark tree, or None if it fails
+    # load the parser on first use if not already loaded
+    global _lark_parser
+    if _lark_parser is None:
+        load_lark_parser()
+    try:
+        return _lark_parser.parse(latex)
+    except Exception:
+        return None
+
 # use non-interactive backend so matplotlib never opens a window
 matplotlib.use("Agg")
 

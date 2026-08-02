@@ -7,3 +7,5 @@ tokenizers
 streamlit
 arxiv
 tqdm
+lark
+requests

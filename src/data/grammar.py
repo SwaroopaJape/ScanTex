@@ -1,101 +1,138 @@
-# scantex cfg grammar definition
-# a comprehensive pcfg for latex math expressions
+# scantex pcfg grammar definition (AUTO-GENERATED)
+# generated from grammar.lark and scraped rule_frequencies.json
 
-# global depth / length caps – used by the generator to bound recursion
-MAX_DEPTH       = 4      # max recursive expansion depth
-MAX_TERMS       = 3      # max additive terms   (for plus/star helpers)
-MAX_FACTORS     = 2      # max multiplicative factors
-MAX_DIGITS      = 3      # max digits in a number literal
-MAX_SCRIPT_DEPTH = 2     # max depth inside super/sub-scripts
-MAX_FUNC_ARGS   = 1      # max chained function arguments
-MAX_MATRIX_ROWS = 3      # max rows in a matrix
-MAX_MATRIX_COLS = 3      # max cols in a matrix
+MAX_DEPTH = 4
+MAX_TERMS = 3
+MAX_FACTORS = 2
+MAX_DIGITS = 3
+MAX_SCRIPT_DEPTH = 2
+MAX_FUNC_ARGS = 1
+MAX_MATRIX_ROWS = 3
+MAX_MATRIX_COLS = 3
 
-# helper: build uniform probabilities
-def _uniform(n: int) -> list[float]:
-    # return a list of n equal probabilities summing to 1
-    return [1.0 / n] * n
+rules = {}
 
-# grammar rules
-rules: dict[str, tuple[list[list[str]], list[float]]] = {}
-
-# start symbol
-rules["START"] = (
+rules['START'] = (
     [
         ["EXPR"],
         ["RELATION"],
         ["SET_EXPR"],
         ["LOGIC_EXPR"],
+        ["ALIGN_BLOCK"],
     ],
-    _uniform(4),
+    [0.46099934750163135, 0.5252991867520332, 0.004600488498778754, 0.0007504981237546908, 0.008350479123802192]
 )
 
-# relations
-rules["RELATION"] = (
+rules['ALIGN_BLOCK'] = (
     [
-        ["EXPR", " ", "REL_OP", " ", "EXPR"],
-        ["EXPR", " ", "REL_OP", " ", "EXPR", " ", "REL_OP", " ", "EXPR"],
+        ["ALIGN_ROW", "__ALIGN_BLOCK_STAR_0"],
+        ["ALIGN_ROW"],
     ],
-    _uniform(2),
+    [0.003311258278145696, 0.9966887417218544]
 )
 
-rules["REL_OP"] = (
+rules['ALIGN_ROW'] = (
     [
-        ["="],
-        ["<"],
-        [">"],
-        [r"\leq "],
-        [r"\geq "],
-        [r"\neq "],
-        [r"\approx "],
-        [r"\equiv "],
-        [r"\in "],
-        [r"\subset "],
-        [r"\subseteq "],
-        [r"\supseteq "],
-        [r"\sim "],
-        [r"\propto "],
-        [r"\notin "],
-        [r"\supset "],
-        [r"\cong "],
-        [r"\perp "],
-        [r"\parallel "],
+        ["EXPR", "__ALIGN_ROW_STAR_1"],
+        ["EXPR"],
     ],
-    _uniform(19),
+    [0.00010867202782003911, 0.9998913279721799]
 )
 
-# expressions (additive layer)
-rules["EXPR"] = (
+rules['RELATION'] = (
+    [
+        ["EXPR", "REL_OP", "EXPR"],
+        ["EXPR", "REL_OP", "EXPR", "REL_OP", "EXPR"],
+    ],
+    [0.9175701169424768, 0.0824298830575232]
+)
+
+rules['REL_OP'] = (
+    [
+        ["EQUAL"],
+        ["__ANON_0"],
+        ["LESSTHAN"],
+        ["MORETHAN"],
+        ["__ANON_1"],
+        ["__ANON_2"],
+        ["__ANON_3"],
+        ["__ANON_4"],
+        ["__ANON_5"],
+        ["__ANON_6"],
+        ["__ANON_7"],
+        ["__ANON_8"],
+        ["__ANON_9"],
+        ["__ANON_10"],
+        ["__ANON_11"],
+        ["__ANON_12"],
+        ["__ANON_13"],
+        ["__ANON_14"],
+        ["__ANON_15"],
+        ["__ANON_16"],
+        ["__ANON_17"],
+        ["__ANON_18"],
+        ["__ANON_19"],
+        ["__ANON_20"],
+        ["__ANON_21"],
+        ["__ANON_22"],
+        ["__ANON_23"],
+        ["__ANON_24"],
+        ["__ANON_25"],
+        ["__ANON_26"],
+        ["__ANON_27"],
+        ["__ANON_28"],
+        ["__ANON_29"],
+        ["__ANON_30"],
+        ["__ANON_31"],
+        ["__ANON_32"],
+        ["__ANON_33"],
+        ["__ANON_34"],
+        ["__ANON_35"],
+        ["__ANON_36"],
+    ],
+    [0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988]
+)
+
+rules['EXPR'] = (
     [
         ["TERM"],
-        ["TERM", " + ", "EXPR"],
-        ["TERM", " - ", "EXPR"],
+        ["TERM", "PLUS", "EXPR"],
+        ["TERM", "MINUS", "EXPR"],
+        ["TERM", "__ANON_37", "EXPR"],
+        ["TERM", "__ANON_38", "EXPR"],
         ["UNARY_OP", "TERM"],
     ],
-    _uniform(4),
+    [0.8640035094268914, 0.02777398979120893, 0.02777398979120893, 0.02777398979120893, 0.02777398979120893, 0.024900531408272652]
 )
 
-rules["UNARY_OP"] = (
+rules['UNARY_OP'] = (
     [
-        ["-"],
-        ["+"],
+        ["MINUS"],
+        ["PLUS"],
+        ["__ANON_37"],
+        ["__ANON_38"],
     ],
-    _uniform(2),
+    [0.25, 0.25, 0.25, 0.25]
 )
 
-# terms (multiplicative layer)
-rules["TERM"] = (
+rules['TERM'] = (
     [
         ["FACTOR"],
-        ["FACTOR", r" \cdot ", "TERM"],
-        ["FACTOR", r" \times ", "TERM"],
-        ["FACTOR", " ", "FACTOR"],          # implicit multiplication  e.g. 2x
+        ["FACTOR", "__ANON_39", "TERM"],
+        ["FACTOR", "__ANON_40", "TERM"],
+        ["FACTOR", "__ANON_41", "TERM"],
+        ["FACTOR", "__ANON_42", "TERM"],
+        ["FACTOR", "__ANON_43", "TERM"],
+        ["FACTOR", "__ANON_44", "TERM"],
+        ["FACTOR", "__ANON_45", "TERM"],
+        ["FACTOR", "__ANON_46", "TERM"],
+        ["FACTOR", "__ANON_47", "TERM"],
+        ["FACTOR", "FACTOR"],
     ],
-    _uniform(4),
+    [0.7540171565138206, 0.0033717365442078847, 0.0033717365442078847, 0.0033717365442078847, 0.0033717365442078847, 0.0033717365442078847, 0.0033717365442078847, 0.0033717365442078847, 0.0033717365442078847, 0.0033717365442078847, 0.21563721458830884]
 )
 
-# factors
-rules["FACTOR"] = (
+rules['FACTOR'] = (
     [
         ["ATOM"],
         ["SCRIPTED"],
@@ -109,11 +146,10 @@ rules["FACTOR"] = (
         ["PARTIAL_DERIV"],
         ["TEXT_COND"],
     ],
-    _uniform(11),
+    [0.6185981148795345, 0.21394547833699284, 0.025893954592733266, 0.0076990655766119975, 0.007797950843003961, 0.004718381118225671, 0.10993230455927475, 0.009069332839472062, 0.0006782116627825948, 0.001667064326702229, 1.4126466627423345e-07]
 )
 
-# atoms (leaf values)
-rules["ATOM"] = (
+rules['ATOM'] = (
     [
         ["VARIABLE"],
         ["NUMBER"],
@@ -121,364 +157,480 @@ rules["ATOM"] = (
         ["CONSTANT"],
         ["STYLED_ATOM"],
     ],
-    _uniform(5),
+    [0.5852528662153474, 0.28273887059658465, 0.0849501739031973, 0.007311156106315881, 0.03974693317855458]
 )
 
-# variables
-_lower = list("abcdefghijklmnopqrstuvwxyz")
-_upper = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-_all_vars = _lower + _upper
-
-rules["VARIABLE"] = (
-    [[v] for v in _all_vars],
-    _uniform(len(_all_vars)),
-)
-
-# digits / numbers
-rules["DIGIT"] = (
-    [[d] for d in "0123456789"],
-    _uniform(10),
-)
-
-# number is handled by the generator via plus(digit, max_digits)
-# we still define a single-digit base case for grammar completeness
-rules["NUMBER"] = (
+rules['VARIABLE'] = (
     [
-        ["DIGIT"],
+        ["__ANON_48"],
     ],
-    _uniform(1),
+    [1.0]
 )
 
-# greek letters
-_greek_lower = [
-    r"\alpha", r"\beta", r"\gamma", r"\delta", r"\epsilon", r"\varepsilon",
-    r"\zeta", r"\eta", r"\theta", r"\vartheta", r"\iota", r"\kappa",
-    r"\lambda", r"\mu", r"\nu", r"\xi", r"\pi", r"\rho", r"\sigma",
-    r"\tau", r"\upsilon", r"\phi", r"\varphi", r"\chi", r"\psi", r"\omega",
-]
-_greek_upper = [
-    r"\Gamma", r"\Delta", r"\Theta", r"\Lambda", r"\Xi", r"\Pi",
-    r"\Sigma", r"\Upsilon", r"\Phi", r"\Psi", r"\Omega",
-]
-_all_greek = _greek_lower + _greek_upper
-
-rules["GREEK"] = (
-    [[g] for g in _all_greek],
-    _uniform(len(_all_greek)),
-)
-
-# constants
-rules["CONSTANT"] = (
+rules['DIGIT'] = (
     [
-        [r"\infty"],
-        [r"\pi"],
-        ["e"],
-        ["0"],
-        ["1"],
+        ["__ANON_49"],
     ],
-    _uniform(5),
+    [1.0]
 )
 
-# superscripts / subscripts
-rules["SCRIPTED"] = (
+rules['NUMBER'] = (
     [
-        ["SCRIPTABLE", "^{", "EXPR", "}"],                           # x^{2}
-        ["SCRIPTABLE", "_{", "EXPR", "}"],                           # x_{i}
-        ["SCRIPTABLE", "_{", "EXPR", "}^{", "EXPR", "}"],           # x_{i}^{2}
+        ["__NUMBER_PLUS_2"],
     ],
-    _uniform(3),
+    [1.0]
 )
 
-rules["SCRIPTABLE"] = (
+rules['GREEK'] = (
+    [
+        ["__ANON_50"],
+        ["__ANON_51"],
+        ["__ANON_52"],
+        ["__ANON_53"],
+        ["__ANON_54"],
+        ["__ANON_55"],
+        ["__ANON_56"],
+        ["__ANON_57"],
+        ["__ANON_58"],
+        ["__ANON_59"],
+        ["__ANON_60"],
+        ["__ANON_61"],
+        ["__ANON_62"],
+        ["__ANON_63"],
+        ["__ANON_64"],
+        ["__ANON_65"],
+        ["__ANON_66"],
+        ["__ANON_67"],
+        ["__ANON_68"],
+        ["__ANON_69"],
+        ["__ANON_70"],
+        ["__ANON_71"],
+        ["__ANON_72"],
+        ["__ANON_73"],
+        ["__ANON_74"],
+        ["__ANON_75"],
+        ["__ANON_76"],
+        ["__ANON_77"],
+        ["__ANON_78"],
+        ["__ANON_79"],
+        ["__ANON_80"],
+        ["__ANON_81"],
+        ["__ANON_82"],
+        ["__ANON_83"],
+        ["__ANON_84"],
+        ["__ANON_85"],
+        ["__ANON_86"],
+        ["__ANON_87"],
+        ["__ANON_88"],
+        ["__ANON_89"],
+    ],
+    [0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988, 0.024999999999999988]
+)
+
+rules['CONSTANT'] = (
+    [
+        ["__ANON_90"],
+        ["__ANON_66"],
+        ["__ANON_91"],
+        ["E"],
+        ["__ANON_92"],
+        ["__ANON_93"],
+    ],
+    [0.16666666666666666, 0.16666666666666666, 0.16666666666666666, 0.16666666666666666, 0.16666666666666666, 0.16666666666666666]
+)
+
+rules['SCRIPTED'] = (
+    [
+        ["SCRIPTABLE", "__ANON_94", "EXPR", "RBRACE"],
+        ["SCRIPTABLE", "__ANON_95", "EXPR", "RBRACE"],
+        ["SCRIPTABLE", "__ANON_95", "EXPR", "__ANON_96", "EXPR", "RBRACE"],
+        ["SCRIPTABLE", "CIRCUMFLEX", "ATOM"],
+        ["SCRIPTABLE", "UNDERSCORE", "ATOM"],
+    ],
+    [0.1284254591434165, 0.1284254591434165, 0.003037956295951482, 0.37005556270860773, 0.37005556270860773]
+)
+
+rules['SCRIPTABLE'] = (
     [
         ["VARIABLE"],
+        ["NUMBER"],
         ["GREEK"],
+        ["CONSTANT"],
+        ["STYLED_ATOM"],
         ["DELIMITED"],
         ["FUNC_CALL"],
+        ["ACCENT"],
     ],
-    _uniform(4),
+    [0.7099341832463083, 0.03149603699683329, 0.12717067192778114, 6.602804343060584e-07, 0.07784772348511859, 0.037504588949018425, 0.004424539190284898, 0.011621595924220933]
 )
 
-# fractions
-rules["FRAC"] = (
+rules['FRAC'] = (
     [
-        [r"\frac{", "EXPR", "}{", "EXPR", "}"],
-        [r"\dfrac{", "EXPR", "}{", "EXPR", "}"],
+        ["__ANON_97", "EXPR", "__ANON_98", "EXPR", "RBRACE"],
+        ["__ANON_99", "EXPR", "__ANON_98", "EXPR", "RBRACE"],
+        ["__ANON_100", "EXPR", "__ANON_98", "EXPR", "RBRACE"],
+        ["__ANON_101", "EXPR", "__ANON_98", "EXPR", "RBRACE"],
     ],
-    _uniform(2),
+    [0.25, 0.25, 0.25, 0.25]
 )
 
-# square roots
-rules["SQRT"] = (
+rules['SQRT'] = (
     [
-        [r"\sqrt{", "EXPR", "}"],
-        [r"\sqrt[", "NUMBER", "]{", "EXPR", "}"],
+        ["__ANON_102", "EXPR", "RBRACE"],
+        ["__ANON_103", "NUMBER", "__ANON_104", "EXPR", "RBRACE"],
     ],
-    _uniform(2),
+    [0.968790136141793, 0.03120986385820704]
 )
 
-# function calls
-rules["FUNC_CALL"] = (
+rules['FUNC_CALL'] = (
     [
-        ["FUNC_NAME", r"\left(", "EXPR", r"\right)"],
-        ["FUNC_NAME", "{", "ATOM", "}"],
-        ["FUNC_NAME", " ", "ATOM"],
+        ["FUNC_NAME", "__ANON_105", "EXPR", "__ANON_106"],
+        ["FUNC_NAME", "LBRACE", "ATOM", "RBRACE"],
+        ["FUNC_NAME", "ATOM"],
     ],
-    _uniform(3),
+    [0.09532655929437991, 0.45233672035281003, 0.45233672035281003]
 )
 
-rules["FUNC_NAME"] = (
+rules['FUNC_NAME'] = (
     [
-        [r"\sin"],
-        [r"\cos"],
-        [r"\tan"],
-        [r"\cot"],
-        [r"\sec"],
-        [r"\csc"],
-        [r"\arcsin"],
-        [r"\arccos"],
-        [r"\arctan"],
-        [r"\sinh"],
-        [r"\cosh"],
-        [r"\tanh"],
-        [r"\log"],
-        [r"\ln"],
-        [r"\exp"],
-        [r"\det"],
-        [r"\max"],
-        [r"\min"],
+        ["__ANON_107"],
+        ["__ANON_108"],
+        ["__ANON_109"],
+        ["__ANON_110"],
+        ["__ANON_111"],
+        ["__ANON_112"],
+        ["__ANON_113"],
+        ["__ANON_114"],
+        ["__ANON_115"],
+        ["__ANON_116"],
+        ["__ANON_117"],
+        ["__ANON_118"],
+        ["__ANON_119"],
+        ["__ANON_120"],
+        ["__ANON_121"],
+        ["__ANON_122"],
+        ["__ANON_123"],
+        ["__ANON_124"],
+        ["__ANON_125"],
+        ["__ANON_126"],
+        ["__ANON_127"],
+        ["__ANON_128"],
+        ["__ANON_129"],
+        ["__ANON_130"],
+        ["__ANON_131"],
+        ["__ANON_132"],
+        ["__ANON_133"],
+        ["__ANON_134"],
+        ["__ANON_135"],
+        ["__ANON_136"],
+        ["__ANON_137"],
     ],
-    _uniform(18),
+    [0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024, 0.032258064516129024]
 )
 
-# big operators (summation, product, integral, limit)
-rules["BIG_OP"] = (
+rules['BIG_OP'] = (
     [
         ["SUMMATION"],
         ["PRODUCT"],
         ["INTEGRAL"],
         ["LIMIT"],
+        ["BIG_GENERIC"],
     ],
-    _uniform(4),
+    [0.4311031282742105, 0.06888190390660082, 0.1706630743900614, 0.2814249363867685, 0.04792695704235894]
 )
 
-rules["SUMMATION"] = (
+rules['SUMMATION'] = (
     [
-        [r"\sum_{", "SUB_ASSIGN", "}^{", "EXPR", "} ", "EXPR"],
-        [r"\sum_{", "SUB_ASSIGN", "} ", "EXPR"],
-        [r"\sum ", "EXPR"],
+        ["__ANON_138", "SUB_ASSIGN", "__ANON_96", "EXPR", "RBRACE", "EXPR"],
+        ["__ANON_138", "SUB_ASSIGN", "RBRACE", "EXPR"],
+        ["__ANON_139", "EXPR"],
     ],
-    _uniform(3),
+    [0.5971672568214955, 6.942997986530584e-05, 0.4027633131986392]
 )
 
-rules["PRODUCT"] = (
+rules['PRODUCT'] = (
     [
-        [r"\prod_{", "SUB_ASSIGN", "}^{", "EXPR", "} ", "EXPR"],
-        [r"\prod_{", "SUB_ASSIGN", "} ", "EXPR"],
-        [r"\prod ", "EXPR"],
+        ["__ANON_140", "SUB_ASSIGN", "__ANON_96", "EXPR", "RBRACE", "EXPR"],
+        ["__ANON_140", "SUB_ASSIGN", "RBRACE", "EXPR"],
+        ["__ANON_141", "EXPR"],
     ],
-    _uniform(3),
+    [0.7386018237082067, 0.0004342162396873643, 0.2609639600521059]
 )
 
-rules["INTEGRAL"] = (
+rules['INTEGRAL'] = (
     [
-        [r"\int_{", "EXPR", "}^{", "EXPR", "} ", "EXPR", r"\, d", "VARIABLE"],
-        [r"\int ", "EXPR", r"\, d", "VARIABLE"],
-        [r"\iint ", "EXPR", r"\, d", "VARIABLE", r"\, d", "VARIABLE"],
-        [r"\oint_{", "EXPR", "} ", "EXPR", r"\, d", "VARIABLE"],
+        ["__ANON_142", "EXPR", "__ANON_96", "EXPR", "RBRACE", "EXPR", "__ANON_143", "D", "VARIABLE"],
+        ["__ANON_142", "EXPR", "__ANON_96", "EXPR", "RBRACE", "EXPR", "D", "VARIABLE"],
+        ["__ANON_144", "EXPR", "__ANON_143", "D", "VARIABLE"],
+        ["__ANON_144", "EXPR", "D", "VARIABLE"],
+        ["__ANON_145", "EXPR", "__ANON_143", "D", "VARIABLE", "__ANON_143", "D", "VARIABLE"],
+        ["__ANON_146", "EXPR", "__ANON_143", "D", "VARIABLE", "__ANON_143", "D", "VARIABLE", "__ANON_143", "D", "VARIABLE"],
+        ["__ANON_147", "EXPR", "RBRACE", "EXPR", "__ANON_143", "D", "VARIABLE"],
+        ["__ANON_148", "EXPR", "__ANON_143", "D", "VARIABLE"],
     ],
-    _uniform(4),
+    [0.1315697266993693, 0.1315697266993693, 0.24544498948843732, 0.24544498948843732, 0.00017519271198318152, 0.00017519271198318152, 0.00017519271198318152, 0.24544498948843732]
 )
 
-rules["LIMIT"] = (
+rules['LIMIT'] = (
     [
-        [r"\lim_{", "VARIABLE", r" \to ", "EXPR", "} ", "EXPR"],
-        [r"\lim_{", "VARIABLE", r" \to ", "CONSTANT", "} ", "EXPR"],
+        ["__ANON_149", "VARIABLE", "__ANON_35", "EXPR", "RBRACE", "EXPR"],
+        ["__ANON_149", "VARIABLE", "__ANON_35", "CONSTANT", "RBRACE", "EXPR"],
+        ["__ANON_149", "GREEK", "__ANON_35", "EXPR", "RBRACE", "EXPR"],
+        ["__ANON_150", "EXPR"],
+        ["__ANON_151", "EXPR"],
     ],
-    _uniform(2),
+    [0.978309409888357, 0.00010632642211589577, 0.02137161084529505, 0.00010632642211589577, 0.00010632642211589577]
 )
 
-# subscript assignment  (e.g.  i = 0)
-rules["SUB_ASSIGN"] = (
+rules['BIG_GENERIC'] = (
     [
-        ["VARIABLE", " = ", "EXPR"],
-        ["VARIABLE", " = ", "NUMBER"],
+        ["__ANON_152", "EXPR"],
+        ["__ANON_153", "EXPR"],
+        ["__ANON_154", "EXPR"],
+        ["__ANON_155", "EXPR"],
+        ["__ANON_156", "EXPR"],
+        ["__ANON_157", "EXPR"],
+        ["__ANON_158", "EXPR"],
     ],
-    _uniform(2),
+    [0.14285714285714282, 0.14285714285714282, 0.14285714285714282, 0.14285714285714282, 0.14285714285714282, 0.14285714285714282, 0.14285714285714282]
 )
 
-# delimiters (parentheses, brackets, braces, abs)
-rules["DELIMITED"] = (
+rules['SUB_ASSIGN'] = (
     [
-        [r"\left(", "EXPR", r"\right)"],
-        [r"\left[", "EXPR", r"\right]"],
-        [r"\left|", "EXPR", r"\right|"],
-        [r"\left\{", "EXPR", r"\right\}"],
-        ["(", "EXPR", ")"],
+        ["VARIABLE", "EQUAL", "EXPR"],
+        ["VARIABLE", "EQUAL", "NUMBER"],
+        ["GREEK", "EQUAL", "EXPR"],
+        ["GREEK", "EQUAL", "NUMBER"],
     ],
-    _uniform(5),
+    [0.9900038819875775, 9.704968944099377e-05, 0.00980201863354037, 9.704968944099377e-05]
 )
 
-# accents
-rules["ACCENT"] = (
+rules['DELIMITED'] = (
     [
-        [r"\hat{", "ATOM", "}"],
-        [r"\bar{", "ATOM", "}"],
-        [r"\tilde{", "ATOM", "}"],
-        [r"\vec{", "ATOM", "}"],
-        [r"\dot{", "ATOM", "}"],
-        [r"\ddot{", "ATOM", "}"],
-        [r"\overline{", "EXPR", "}"],
-        [r"\underline{", "EXPR", "}"],
-        [r"\widehat{", "EXPR", "}"],
-        [r"\widetilde{", "EXPR", "}"],
+        ["__ANON_105", "EXPR", "__ANON_106"],
+        ["__ANON_159", "EXPR", "__ANON_160"],
+        ["__ANON_161", "EXPR", "__ANON_162"],
+        ["__ANON_163", "EXPR", "__ANON_164"],
+        ["__ANON_165", "EXPR", "__ANON_166"],
+        ["__ANON_167", "EXPR", "__ANON_168"],
+        ["__ANON_169", "EXPR", "__ANON_170"],
+        ["__ANON_171", "EXPR", "__ANON_172"],
+        ["LPAR", "EXPR", "RPAR"],
+        ["LSQB", "EXPR", "RSQB"],
     ],
-    _uniform(10),
+    [0.09999999999999999, 0.09999999999999999, 0.09999999999999999, 0.09999999999999999, 0.09999999999999999, 0.09999999999999999, 0.09999999999999999, 0.09999999999999999, 0.09999999999999999, 0.09999999999999999]
 )
 
-# binomial coefficients
-rules["BINOM"] = (
+rules['ACCENT'] = (
     [
-        [r"\binom{", "EXPR", "}{", "EXPR", "}"],
+        ["__ANON_173", "ATOM", "RBRACE"],
+        ["__ANON_174", "ATOM", "RBRACE"],
+        ["__ANON_175", "ATOM", "RBRACE"],
+        ["__ANON_176", "ATOM", "RBRACE"],
+        ["__ANON_177", "ATOM", "RBRACE"],
+        ["__ANON_178", "ATOM", "RBRACE"],
+        ["__ANON_179", "ATOM", "RBRACE"],
+        ["__ANON_180", "EXPR", "RBRACE"],
+        ["__ANON_181", "EXPR", "RBRACE"],
+        ["__ANON_182", "EXPR", "RBRACE"],
+        ["__ANON_183", "EXPR", "RBRACE"],
+        ["__ANON_184", "EXPR", "RBRACE"],
+        ["__ANON_185", "EXPR", "RBRACE"],
     ],
-    _uniform(1),
+    [0.09098623865225751, 0.09098623865225751, 0.09098623865225751, 0.09098623865225751, 0.09098623865225751, 0.09098623865225751, 0.09098623865225751, 0.060516054905699584, 0.060516054905699584, 0.060516054905699584, 0.060516054905699584, 0.060516054905699584, 0.060516054905699584]
 )
 
-# styled atoms (fonts)
-rules["STYLED_ATOM"] = (
+rules['BINOM'] = (
+    [
+        ["__ANON_186", "EXPR", "__ANON_98", "EXPR", "RBRACE"],
+        ["__ANON_187", "EXPR", "__ANON_98", "EXPR", "RBRACE"],
+    ],
+    [0.5, 0.5]
+)
+
+rules['STYLED_ATOM'] = (
     [
         ["MATHBB"],
         ["MATHCAL"],
         ["MATHBF"],
         ["MATHRM"],
+        ["MATHSF"],
+        ["MATHTT"],
+        ["MATHFRAK"],
     ],
-    _uniform(4),
+    [0.2505846417473819, 0.1637319655992981, 0.41137946110261814, 0.07394507741918445, 0.017901627607414164, 2.934212032029858e-06, 0.08245429231207103]
 )
 
-_mathbb_letters = ["R", "N", "Z", "Q", "C", "F", "P", "E"]
-rules["MATHBB"] = (
-    [[r"\mathbb{", l, "}"] for l in _mathbb_letters],
-    _uniform(len(_mathbb_letters)),
-)
-
-_mathcal_letters = ["O", "L", "F", "H", "A", "B", "C", "D", "M", "N", "P", "S"]
-rules["MATHCAL"] = (
-    [[r"\mathcal{", l, "}"] for l in _mathcal_letters],
-    _uniform(len(_mathcal_letters)),
-)
-
-rules["MATHBF"] = (
+rules['MATHBB'] = (
     [
-        [r"\mathbf{", "VARIABLE", "}"],
-        [r"\mathbf{", "GREEK", "}"],
+        ["__ANON_188", "VARIABLE", "RBRACE"],
     ],
-    _uniform(2),
+    [1.0]
 )
 
-rules["MATHRM"] = (
+rules['MATHCAL'] = (
     [
-        [r"\mathrm{", "VARIABLE", "}"],
-        [r"\mathrm{d}"],
-        [r"\mathrm{e}"],
+        ["__ANON_189", "VARIABLE", "RBRACE"],
     ],
-    _uniform(3),
+    [1.0]
 )
 
-# set theory expressions
-rules["SET_EXPR"] = (
+rules['MATHBF'] = (
     [
-        ["EXPR", " ", "SET_OP", " ", "EXPR"],
-        ["EXPR", r" \in ", "STYLED_ATOM"],
-        [r"\left\{", "EXPR", r" \mid ", "EXPR", r"\right\}"],
-        ["STYLED_ATOM", " ", "SET_OP", " ", "STYLED_ATOM"],
+        ["__ANON_190", "VARIABLE", "RBRACE"],
+        ["__ANON_190", "GREEK", "RBRACE"],
     ],
-    _uniform(4),
+    [0.9828747093479409, 0.017125290652059172]
 )
 
-rules["SET_OP"] = (
+rules['MATHRM'] = (
     [
-        [r"\cup "],
-        [r"\cap "],
-        [r"\setminus "],
-        [r"\bigcup "],
-        [r"\bigcap "],
+        ["__ANON_191", "VARIABLE", "RBRACE"],
+        ["__ANON_192"],
+        ["__ANON_193"],
     ],
-    _uniform(5),
+    [0.9999206443677341, 3.967781613300005e-05, 3.967781613300005e-05]
 )
 
-# logic expressions
-rules["LOGIC_EXPR"] = (
+rules['MATHSF'] = (
     [
-        [r"\forall ", "VARIABLE", r" \in ", "STYLED_ATOM", ", ", "EXPR"],
-        [r"\exists ", "VARIABLE", r" \in ", "STYLED_ATOM", ": ", "EXPR"],
-        ["EXPR", r" \Rightarrow ", "EXPR"],
-        ["EXPR", r" \iff ", "EXPR"],
-        ["EXPR", r" \Leftrightarrow ", "EXPR"],
-        [r"\neg ", "DELIMITED"],
-        ["EXPR", r" \land ", "EXPR"],
-        ["EXPR", r" \lor ", "EXPR"],
+        ["__ANON_194", "VARIABLE", "RBRACE"],
     ],
-    _uniform(8),
+    [1.0]
 )
 
-# partial derivatives
-rules["PARTIAL_DERIV"] = (
+rules['MATHTT'] = (
     [
-        [r"\frac{\partial ", "EXPR", r"}{\partial ", "VARIABLE", "}"],
-        [r"\frac{\partial^2 ", "EXPR", r"}{\partial ", "VARIABLE", "^2}"],
-        [r"\frac{\partial^2 ", "EXPR", r"}{\partial ", "VARIABLE", r" \partial ", "VARIABLE", "}"],
+        ["__ANON_195", "VARIABLE", "RBRACE"],
     ],
-    _uniform(3),
+    [1.0]
 )
 
-# text conditions
-rules["TEXT_COND"] = (
+rules['MATHFRAK'] = (
     [
-        ["EXPR", r" \text{ if } ", "EXPR", " ", "REL_OP", " ", "EXPR"],
-        ["EXPR", r" \text{ for } ", "VARIABLE", r" \in ", "STYLED_ATOM"],
-        ["EXPR", r" \text{ where } ", "RELATION"],
-        ["EXPR", r" \text{ and } ", "EXPR"],
+        ["__ANON_196", "VARIABLE", "RBRACE"],
     ],
-    _uniform(4),
+    [1.0]
 )
 
-# derived sets
-non_terminals: set[str] = set(rules.keys())
+rules['SET_EXPR'] = (
+    [
+        ["EXPR", "SET_OP", "EXPR"],
+        ["EXPR", "__ANON_6", "STYLED_ATOM"],
+        ["EXPR", "__ANON_6", "EXPR"],
+        ["EXPR", "__ANON_7", "EXPR"],
+        ["EXPR", "__ANON_8", "EXPR"],
+        ["EXPR", "__ANON_9", "EXPR"],
+        ["__ANON_165", "EXPR", "__ANON_197", "EXPR", "__ANON_166"],
+        ["__ANON_198", "EXPR", "__ANON_197", "EXPR", "__ANON_199"],
+        ["STYLED_ATOM", "SET_OP", "STYLED_ATOM"],
+    ],
+    [0.9665544575958297, 0.00010858942339016174, 0.005538060592898249, 0.005538060592898249, 0.005538060592898249, 0.005538060592898249, 0.005538060592898249, 0.005538060592898249, 0.00010858942339016174]
+)
 
-def _collect_terminals() -> set[str]:
-    # walk every production and collect symbols that are not non-terminals
-    terms: set[str] = set()
-    for prods, _ in rules.values():
-        for prod in prods:
-            for sym in prod:
-                if sym not in non_terminals:
-                    terms.add(sym)
-    return terms
+rules['SET_OP'] = (
+    [
+        ["__ANON_200"],
+        ["__ANON_201"],
+        ["__ANON_202"],
+        ["__ANON_154"],
+        ["__ANON_155"],
+        ["__ANON_203"],
+        ["__ANON_204"],
+        ["__ANON_205"],
+    ],
+    [0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125]
+)
 
-terminals: set[str] = _collect_terminals()
+rules['LOGIC_EXPR'] = (
+    [
+        ["__ANON_206", "VARIABLE", "__ANON_6", "STYLED_ATOM", "COMMA", "EXPR"],
+        ["__ANON_206", "VARIABLE", "__ANON_6", "EXPR", "COMMA", "EXPR"],
+        ["__ANON_207", "VARIABLE", "__ANON_6", "STYLED_ATOM", "COLON", "EXPR"],
+        ["__ANON_207", "VARIABLE", "__ANON_6", "EXPR", "COLON", "EXPR"],
+        ["__ANON_208", "VARIABLE", "__ANON_6", "EXPR", "COLON", "EXPR"],
+        ["EXPR", "__ANON_27", "EXPR"],
+        ["EXPR", "__ANON_209", "EXPR"],
+        ["EXPR", "__ANON_210", "EXPR"],
+        ["EXPR", "__ANON_30", "EXPR"],
+        ["__ANON_211", "DELIMITED"],
+        ["__ANON_212", "DELIMITED"],
+        ["EXPR", "__ANON_213", "EXPR"],
+        ["EXPR", "__ANON_214", "EXPR"],
+        ["EXPR", "__ANON_45", "EXPR"],
+        ["EXPR", "__ANON_46", "EXPR"],
+    ],
+    [0.0006600660066006602, 0.022662266226622665, 0.0006600660066006602, 0.022662266226622665, 0.022662266226622665, 0.11617161716171619, 0.11617161716171619, 0.11617161716171619, 0.11617161716171619, 0.0006600660066006602, 0.0006600660066006602, 0.11617161716171619, 0.11617161716171619, 0.11617161716171619, 0.11617161716171619]
+)
 
-# convenience printer
-if __name__ == "__main__":
-    print("=" * 60)
-    print("ScanTeX CFG Grammar Summary")
-    print("=" * 60)
-    print(f"  Non-terminals : {len(non_terminals)}")
-    print(f"  Terminals     : {len(terminals)}")
-    total_prods = sum(len(p) for p, _ in rules.values())
-    print(f"  Total prods   : {total_prods}")
-    print()
-    for nt, (prods, probs) in rules.items():
-        print(f"  {nt}  ({len(prods)} productions)")
-        for prod, prob in zip(prods, probs):
-            rhs = "  ".join(prod)
-            print(f"      p={prob:.3f}  →  {rhs}")
-    print()
-    print("Global parameters:")
-    print(f"  MAX_DEPTH        = {MAX_DEPTH}")
-    print(f"  MAX_TERMS        = {MAX_TERMS}")
-    print(f"  MAX_FACTORS      = {MAX_FACTORS}")
-    print(f"  MAX_DIGITS       = {MAX_DIGITS}")
-    print(f"  MAX_SCRIPT_DEPTH = {MAX_SCRIPT_DEPTH}")
-    print(f"  MAX_FUNC_ARGS    = {MAX_FUNC_ARGS}")
-    print(f"  MAX_MATRIX_ROWS  = {MAX_MATRIX_ROWS}")
-    print(f"  MAX_MATRIX_COLS  = {MAX_MATRIX_COLS}")
+rules['PARTIAL_DERIV'] = (
+    [
+        ["__ANON_97", "__ANON_215", "EXPR", "__ANON_98", "__ANON_215", "VARIABLE", "RBRACE"],
+        ["__ANON_97", "__ANON_215", "EXPR", "__ANON_98", "__ANON_215", "GREEK", "RBRACE"],
+        ["__ANON_97", "__ANON_216", "EXPR", "__ANON_98", "__ANON_215", "VARIABLE", "__ANON_217"],
+        ["__ANON_97", "__ANON_216", "EXPR", "__ANON_98", "__ANON_215", "VARIABLE", "__ANON_215", "VARIABLE", "RBRACE"],
+        ["__ANON_97", "__ANON_216", "EXPR", "__ANON_98", "__ANON_215", "GREEK", "__ANON_215", "GREEK", "RBRACE"],
+    ],
+    [0.4151630664972469, 0.04243964421855145, 0.4151630664972469, 0.12714951291825496, 8.470986869970351e-05]
+)
+
+rules['TEXT_COND'] = (
+    [
+        ["EXPR", "__ANON_218", "EXPR", "REL_OP", "EXPR"],
+        ["EXPR", "__ANON_219", "VARIABLE", "__ANON_6", "STYLED_ATOM"],
+        ["EXPR", "__ANON_220", "RELATION"],
+        ["EXPR", "__ANON_221", "EXPR"],
+        ["EXPR", "__ANON_222", "__ANON_223", "RBRACE", "EXPR"],
+    ],
+    [0.19999999999999998, 0.19999999999999998, 0.19999999999999998, 0.19999999999999998, 0.19999999999999998]
+)
+
+non_terminals = {
+    'ACCENT',
+    'ALIGN_BLOCK',
+    'ALIGN_ROW',
+    'ATOM',
+    'BIG_GENERIC',
+    'BIG_OP',
+    'BINOM',
+    'CONSTANT',
+    'DELIMITED',
+    'DIGIT',
+    'EXPR',
+    'FACTOR',
+    'FRAC',
+    'FUNC_CALL',
+    'FUNC_NAME',
+    'GREEK',
+    'INTEGRAL',
+    'LIMIT',
+    'LOGIC_EXPR',
+    'MATHBB',
+    'MATHBF',
+    'MATHCAL',
+    'MATHFRAK',
+    'MATHRM',
+    'MATHSF',
+    'MATHTT',
+    'NUMBER',
+    'PARTIAL_DERIV',
+    'PRODUCT',
+    'RELATION',
+    'REL_OP',
+    'SCRIPTABLE',
+    'SCRIPTED',
+    'SET_EXPR',
+    'SET_OP',
+    'SQRT',
+    'START',
+    'STYLED_ATOM',
+    'SUB_ASSIGN',
+    'SUMMATION',
+    'TERM',
+    'TEXT_COND',
+    'UNARY_OP',
+    'VARIABLE',
+}
+
+terminals = {
+}

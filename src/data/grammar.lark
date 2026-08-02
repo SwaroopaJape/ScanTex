@@ -1,0 +1,293 @@
+// scantex pcfg - lark grammar definition
+// %ignore /\s+/ means the parser ignores all whitespace between tokens
+// so x+y, x + y, x  +  y all parse identically
+
+// start symbol
+start: expr
+     | relation
+     | set_expr
+     | logic_expr
+     | align_block
+
+// align environments (multi-line equations with & and \\)
+align_block: align_row (NEWLINE align_row)*
+align_row: (expr (ALIGN_SEP expr)*)
+NEWLINE: "\\\\"
+ALIGN_SEP: "&"
+
+// relations
+relation: expr rel_op expr
+        | expr rel_op expr rel_op expr
+
+rel_op: "="
+      | ":="
+      | "<"
+      | ">"
+      | "\\leq"
+      | "\\geq"
+      | "\\neq"
+      | "\\approx"
+      | "\\equiv"
+      | "\\in"
+      | "\\notin"
+      | "\\subset"
+      | "\\subseteq"
+      | "\\supset"
+      | "\\supseteq"
+      | "\\sim"
+      | "\\simeq"
+      | "\\cong"
+      | "\\propto"
+      | "\\perp"
+      | "\\parallel"
+      | "\\ll"
+      | "\\gg"
+      | "\\prec"
+      | "\\succ"
+      | "\\preceq"
+      | "\\succeq"
+      | "\\longrightarrow"
+      | "\\rightarrow"
+      | "\\leftarrow"
+      | "\\Rightarrow"
+      | "\\Leftarrow"
+      | "\\leftrightarrow"
+      | "\\Leftrightarrow"
+      | "\\mapsto"
+      | "\\longmapsto"
+      | "\\hookrightarrow"
+      | "\\twoheadrightarrow"
+      | "\\to"
+      | "\\colon"
+
+// expressions (additive layer)
+expr: term
+    | term "+" expr
+    | term "-" expr
+    | term "\\pm" expr
+    | term "\\mp" expr
+    | unary_op term
+
+unary_op: "-" | "+" | "\\pm" | "\\mp"
+
+// terms (multiplicative layer)
+term: factor
+    | factor "\\cdot" term
+    | factor "\\times" term
+    | factor "\\div" term
+    | factor "\\otimes" term
+    | factor "\\oplus" term
+    | factor "\\circ" term
+    | factor "\\wedge" term
+    | factor "\\vee" term
+    | factor "\\ast" term
+    | factor factor
+
+// factors
+factor: atom
+      | scripted
+      | frac
+      | sqrt
+      | func_call
+      | big_op
+      | delimited
+      | accent
+      | binom
+      | partial_deriv
+      | text_cond
+
+// atoms (leaf values)
+atom: variable
+   | number
+   | greek
+   | constant
+   | styled_atom
+
+// variables: single letters
+variable: /[a-zA-Z]/
+
+// digits / numbers
+digit: /[0-9]/
+number: digit+
+
+// greek letters
+greek: "\\alpha" | "\\beta" | "\\gamma" | "\\delta" | "\\epsilon" | "\\varepsilon"
+     | "\\zeta" | "\\eta" | "\\theta" | "\\vartheta" | "\\iota" | "\\kappa"
+     | "\\lambda" | "\\mu" | "\\nu" | "\\xi" | "\\pi" | "\\varpi" | "\\rho" | "\\varrho"
+     | "\\sigma" | "\\varsigma" | "\\tau" | "\\upsilon" | "\\phi" | "\\varphi"
+     | "\\chi" | "\\psi" | "\\omega"
+     | "\\Gamma" | "\\Delta" | "\\Theta" | "\\Lambda" | "\\Xi" | "\\Pi"
+     | "\\Sigma" | "\\Upsilon" | "\\Phi" | "\\Psi" | "\\Omega"
+
+// constants
+constant: "\\infty" | "\\pi" | "\\emptyset" | "e" | "0" | "1"
+
+// superscripts / subscripts  (scriptable now accepts any atom as base)
+scripted: scriptable "^{" expr "}"
+        | scriptable "_{" expr "}"
+        | scriptable "_{" expr "}^{" expr "}"
+        | scriptable "^" atom
+        | scriptable "_" atom
+
+scriptable: variable | number | greek | constant | styled_atom | delimited | func_call | accent
+
+// fractions
+frac: "\\frac{" expr "}{" expr "}"
+    | "\\dfrac{" expr "}{" expr "}"
+    | "\\tfrac{" expr "}{" expr "}"
+    | "\\cfrac{" expr "}{" expr "}"
+
+// square roots
+sqrt: "\\sqrt{" expr "}"
+    | "\\sqrt[" number "]{" expr "}"
+
+// function calls
+func_call: func_name "\\left(" expr "\\right)"
+         | func_name "{" atom "}"
+         | func_name atom
+
+func_name: "\\sin" | "\\cos" | "\\tan" | "\\cot" | "\\sec" | "\\csc"
+         | "\\arcsin" | "\\arccos" | "\\arctan"
+         | "\\sinh" | "\\cosh" | "\\tanh" | "\\coth"
+         | "\\log" | "\\ln" | "\\exp" | "\\det" | "\\max" | "\\min"
+         | "\\sup" | "\\inf" | "\\gcd" | "\\lcm" | "\\deg" | "\\dim"
+         | "\\ker" | "\\hom" | "\\arg" | "\\sgn" | "\\tr" | "\\rank"
+
+// big operators
+big_op: summation | product | integral | limit | big_generic
+
+summation: "\\sum_{" sub_assign "}^{" expr "}" expr
+         | "\\sum_{" sub_assign "}" expr
+         | "\\sum" expr
+
+product: "\\prod_{" sub_assign "}^{" expr "}" expr
+       | "\\prod_{" sub_assign "}" expr
+       | "\\prod" expr
+
+integral: "\\int_{" expr "}^{" expr "}" expr "\\," "d" variable
+        | "\\int_{" expr "}^{" expr "}" expr "d" variable
+        | "\\int" expr "\\," "d" variable
+        | "\\int" expr "d" variable
+        | "\\iint" expr "\\," "d" variable "\\," "d" variable
+        | "\\iiint" expr "\\," "d" variable "\\," "d" variable "\\," "d" variable
+        | "\\oint_{" expr "}" expr "\\," "d" variable
+        | "\\oint" expr "\\," "d" variable
+
+limit: "\\lim_{" variable "\\to" expr "}" expr
+     | "\\lim_{" variable "\\to" constant "}" expr
+     | "\\lim_{" greek "\\to" expr "}" expr
+     | "\\varlimsup" expr
+     | "\\varliminf" expr
+
+big_generic: "\\bigoplus" expr
+           | "\\bigotimes" expr
+           | "\\bigcup" expr
+           | "\\bigcap" expr
+           | "\\bigvee" expr
+           | "\\bigwedge" expr
+           | "\\coprod" expr
+
+// subscript assignment (e.g. i = 0)
+sub_assign: variable "=" expr
+          | variable "=" number
+          | greek "=" expr
+          | greek "=" number
+
+// delimiters
+delimited: "\\left(" expr "\\right)"
+         | "\\left[" expr "\\right]"
+         | "\\left|" expr "\\right|"
+         | "\\left\\|" expr "\\right\\|"
+         | "\\left\\{" expr "\\right\\}"
+         | "\\left\\lfloor" expr "\\right\\rfloor"
+         | "\\left\\lceil" expr "\\right\\rceil"
+         | "\\left\\langle" expr "\\right\\rangle"
+         | "(" expr ")"
+         | "[" expr "]"
+
+// accents
+accent: "\\hat{" atom "}"
+      | "\\bar{" atom "}"
+      | "\\tilde{" atom "}"
+      | "\\vec{" atom "}"
+      | "\\dot{" atom "}"
+      | "\\ddot{" atom "}"
+      | "\\dddot{" atom "}"
+      | "\\overline{" expr "}"
+      | "\\underline{" expr "}"
+      | "\\widehat{" expr "}"
+      | "\\widetilde{" expr "}"
+      | "\\overrightarrow{" expr "}"
+      | "\\overleftarrow{" expr "}"
+
+// binomial coefficients
+binom: "\\binom{" expr "}{" expr "}"
+     | "\\dbinom{" expr "}{" expr "}"
+
+// styled atoms (fonts)
+styled_atom: mathbb | mathcal | mathbf | mathrm | mathsf | mathtt | mathfrak
+
+mathbb: "\\mathbb{" variable "}"
+
+mathcal: "\\mathcal{" variable "}"
+
+mathbf: "\\mathbf{" variable "}"
+      | "\\mathbf{" greek "}"
+
+mathrm: "\\mathrm{" variable "}"
+      | "\\mathrm{d}"
+      | "\\mathrm{e}"
+
+mathsf: "\\mathsf{" variable "}"
+
+mathtt: "\\mathtt{" variable "}"
+
+mathfrak: "\\mathfrak{" variable "}"
+
+// set theory expressions
+set_expr: expr set_op expr
+        | expr "\\in" styled_atom
+        | expr "\\in" expr
+        | expr "\\notin" expr
+        | expr "\\subset" expr
+        | expr "\\subseteq" expr
+        | "\\left\\{" expr "\\mid" expr "\\right\\}"
+        | "\\{" expr "\\mid" expr "\\}"
+        | styled_atom set_op styled_atom
+
+set_op: "\\cup" | "\\cap" | "\\setminus" | "\\bigcup" | "\\bigcap"
+      | "\\sqcup" | "\\sqcap" | "\\uplus"
+
+// logic expressions
+logic_expr: "\\forall" variable "\\in" styled_atom "," expr
+          | "\\forall" variable "\\in" expr "," expr
+          | "\\exists" variable "\\in" styled_atom ":" expr
+          | "\\exists" variable "\\in" expr ":" expr
+          | "\\nexists" variable "\\in" expr ":" expr
+          | expr "\\Rightarrow" expr
+          | expr "\\Longrightarrow" expr
+          | expr "\\iff" expr
+          | expr "\\Leftrightarrow" expr
+          | "\\neg" delimited
+          | "\\lnot" delimited
+          | expr "\\land" expr
+          | expr "\\lor" expr
+          | expr "\\wedge" expr
+          | expr "\\vee" expr
+
+// partial derivatives
+partial_deriv: "\\frac{" "\\partial" expr "}{" "\\partial" variable "}"
+             | "\\frac{" "\\partial" expr "}{" "\\partial" greek "}"
+             | "\\frac{" "\\partial^2" expr "}{" "\\partial" variable "^2}"
+             | "\\frac{" "\\partial^2" expr "}{" "\\partial" variable "\\partial" variable "}"
+             | "\\frac{" "\\partial^2" expr "}{" "\\partial" greek "\\partial" greek "}"
+
+// text conditions
+text_cond: expr "\\text{if}" expr rel_op expr
+         | expr "\\text{for}" variable "\\in" styled_atom
+         | expr "\\text{where}" relation
+         | expr "\\text{and}" expr
+         | expr "\\text{" /[^}]+/ "}" expr
+
+// ignore all whitespace between tokens
+%ignore /\s+/
