@@ -44,6 +44,8 @@ venv.bak/
 /data/
 *.pt
 *.pth
+src/data/grammar.py
+**/weighted_grammar.py
 
 # Hydra Outputs
 outputs/
