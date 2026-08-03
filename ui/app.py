@@ -1,5 +1,6 @@
 import sys
 import time
+import argparse
 from pathlib import Path
 import torch
 import streamlit as st
@@ -192,14 +193,23 @@ div[data-testid="stFileUploader"] {
 
 
 @st.cache_resource
-def load_models():
+def load_models(mode="real"):
     if torch.cuda.is_available():      device = torch.device("cuda")
     elif torch.backends.mps.is_available(): device = torch.device("mps")
     else:                               device = torch.device("cpu")
     
-    dataset = MathDataset()
-    tokenizer = HybridTokenizer(vocab_size=4000)
-    tokenizer.train(dataset.latex_strings)
+    if mode == "toy":
+        dataset = MathDataset(mode="toy")
+        tokenizer = HybridTokenizer(vocab_size=4000)
+        tokenizer.train(dataset.latex_strings)
+    else:
+        tokenizer_path = str(project_root / "data" / "tokenizer_weights")
+        tokenizer = HybridTokenizer(vocab_size=4000)
+        try:
+            tokenizer.load(tokenizer_path)
+        except Exception:
+            st.error(f"Tokenizer not found at {tokenizer_path}. Run train_tokenizer.py first.")
+            st.stop()
     
     checkpoint_path = project_root / "checkpoint.pt"
     if not checkpoint_path.exists():
@@ -218,7 +228,12 @@ def load_models():
     return encoder, decoder, tokenizer, device
 
 
-encoder, decoder, tokenizer, device = load_models()
+parser = argparse.ArgumentParser()
+parser.add_argument("--mode", type=str, default="real", choices=["toy", "real"])
+args, _ = parser.parse_known_args()
+app_mode = args.mode
+
+encoder, decoder, tokenizer, device = load_models(app_mode)
 
 # Brand header
 def get_base64_image(image_path):
@@ -303,7 +318,11 @@ if run_button and uploaded_file is not None:
     
     with st.spinner("Running OCR..."):
         img_tensor = v2.functional.pil_to_tensor(image)
-        img_tensor = v2.functional.to_dtype(img_tensor, torch.float32, scale=True)
+        transform = v2.Compose([
+            v2.Resize((128, 512), antialias=True),
+            v2.ToDtype(torch.float32, scale=True)
+        ])
+        img_tensor = transform(img_tensor)
         
         t0 = time.perf_counter()
         predicted_latex = generate(img_tensor, encoder, decoder, tokenizer, device)

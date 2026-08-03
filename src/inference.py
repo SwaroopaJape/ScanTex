@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 import torch
 import os
+import argparse
 from torchvision.io import read_image
 from torchvision.transforms import v2
 
@@ -9,9 +10,13 @@ from torchvision.transforms import v2
 project_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(project_root))
 
+# pyrefly: ignore [missing-import]
 from src.data.dataset import MathDataset
+# pyrefly: ignore [missing-import]
 from src.data.tokenizer import HybridTokenizer
+# pyrefly: ignore [missing-import]
 from src.models.encoder import VisionEncoder
+# pyrefly: ignore [missing-import]
 from src.models.decoder import LatexDecoder
 
 def generate(image_tensor, encoder, decoder, tokenizer, device, max_len=100):
@@ -48,7 +53,11 @@ def generate(image_tensor, encoder, decoder, tokenizer, device, max_len=100):
 
 
 if __name__ == "__main__":
-    print("=== Initializing Inference Engine ===")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", type=str, default="real", choices=["toy", "real"])
+    args = parser.parse_args()
+
+    print(f"=== Initializing Inference Engine (Mode: {args.mode.upper()}) ===")
     
     # 1. Device
     if torch.cuda.is_available(): device = torch.device("cuda")
@@ -57,10 +66,13 @@ if __name__ == "__main__":
     print(f"Device: {device}")
     
     # 2. Tokenizer 
-    # (Re-train on the sandbox data to reconstruct vocab perfectly)
-    dataset = MathDataset()
+    tokenizer_path = str(project_root / "data" / "tokenizer_weights")
     tokenizer = HybridTokenizer(vocab_size=4000)
-    tokenizer.train(dataset.latex_strings)
+    try:
+        tokenizer.load(tokenizer_path)
+    except Exception:
+        print(f"ERROR: Could not load tokenizer from {tokenizer_path}.")
+        sys.exit(1)
     
     # 3. Load Checkpoint
     checkpoint_path = project_root / "checkpoint.pt"
@@ -81,17 +93,25 @@ if __name__ == "__main__":
     print("Models loaded successfully.")
     
     # 5. Pick a test image (Image 0 from the dataset)
+    dataset = MathDataset(mode=args.mode)
+    if len(dataset) == 0:
+        print(f"ERROR: {args.mode} dataset is empty.")
+        sys.exit(1)
+        
     test_idx = 0
-    img_path = os.path.join(dataset.temp_dir, f"{test_idx}.png")
+    img_path, true_latex = dataset.items[test_idx]
     
     # Load and format exactly how the model expects
     img_tensor = read_image(img_path)[:3, :, :]
     
-    # Only apply ToDtype, skip the RandomAffine during inference!
-    transform = v2.ToDtype(torch.float32, scale=True)
+    # Resize and ToDtype, skip the random spatial augmentations during inference!
+    transform = v2.Compose([
+        v2.ToImage(),
+        v2.Resize((128, 512), antialias=True),
+        v2.ToDtype(torch.float32, scale=True)
+    ])
     img_tensor = transform(img_tensor)
     
-    true_latex = dataset.latex_strings[test_idx]
     print(f"\n--- Inference Test ---")
     print(f"Target LaTeX:   {true_latex}")
     

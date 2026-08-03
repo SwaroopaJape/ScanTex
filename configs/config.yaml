@@ -1,2 +1,4 @@
-batch_size: 4
+batch_size: 96
 learning_rate: 1e-4
+epochs: 500
+mode: toy

@@ -38,9 +38,17 @@ def main(cfg: DictConfig):
         
     # 2. Instantiate Dataset and Tokenizer
     print("\n--- Initializing Data Pipeline ---")
-    dataset = MathDataset()
+    dataset_mode = cfg.get("mode", "toy")
+    print(f"Dataset Mode: {dataset_mode.upper()}")
+    dataset = MathDataset(mode=dataset_mode)
     tokenizer = HybridTokenizer(vocab_size=cfg.get("vocab_size", 4000))
-    tokenizer.train(dataset.latex_strings)
+    tokenizer_path = str(project_root / "data" / "tokenizer_weights")
+    try:
+        tokenizer.load(tokenizer_path)
+        print(f"Tokenizer loaded successfully from {tokenizer_path}")
+    except Exception as e:
+        print(f"ERROR: Could not load tokenizer from {tokenizer_path}. Did you run src/train_tokenizer.py first?")
+        sys.exit(1)
     
     # Custom collator to convert raw strings into padded token batches
     def collate_fn(batch):
