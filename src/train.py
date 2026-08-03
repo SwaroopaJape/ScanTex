@@ -39,8 +39,14 @@ def main(cfg: DictConfig):
     # 2. Instantiate Dataset and Tokenizer
     print("\n--- Initializing Data Pipeline ---")
     dataset_mode = cfg.get("mode", "toy")
-    print(f"Dataset Mode: {dataset_mode.upper()}")
-    dataset = MathDataset(mode=dataset_mode)
+    is_finetuning = (dataset_mode == "finetune")
+    
+    if is_finetuning:
+        print("Dataset Mode: FINETUNE | Data Dir: data/scraped_train")
+        dataset = MathDataset(mode="real", data_dir="data/scraped_train")
+    else:
+        print(f"Dataset Mode: {dataset_mode.upper()}")
+        dataset = MathDataset(mode=dataset_mode)
     tokenizer = HybridTokenizer(vocab_size=cfg.get("vocab_size", 4000))
     tokenizer_path = str(project_root / "data" / "tokenizer_weights")
     try:
@@ -77,6 +83,17 @@ def main(cfg: DictConfig):
     encoder = VisionEncoder().to(device)
     decoder = LatexDecoder(vocab_size=tokenizer.total_vocab_size).to(device)
     
+    if is_finetuning:
+        checkpoint_path = Path("checkpoint.pt")
+        if checkpoint_path.exists():
+            print(f"Loading pretrained weights from {checkpoint_path} for fine-tuning...")
+            checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
+            encoder.load_state_dict(checkpoint['encoder_state'])
+            decoder.load_state_dict(checkpoint['decoder_state'])
+            print("Successfully loaded pretrained weights!")
+        else:
+            print(f"Warning: finetune is true but {checkpoint_path} not found.")
+            
     # 4. Optimization Setup
     optimizer = optim.AdamW(
         list(encoder.parameters()) + list(decoder.parameters()), 

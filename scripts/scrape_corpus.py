@@ -35,6 +35,7 @@ def extract_math_blocks(tex_content: str) -> list[str]:
             
     return cleaned
 
+# pyrefly: ignore [missing-import]
 from src.data.string_generator import parse_with_lark
 
 def main():
