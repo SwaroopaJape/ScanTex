@@ -42,8 +42,8 @@ venv.bak/
 
 # Data
 /data/
-*.pt
-*.pth
+!/data/tokenizer_weights/
+!/data/tokenizer_weights/*
 src/data/grammar.py
 **/weighted_grammar.py
 
