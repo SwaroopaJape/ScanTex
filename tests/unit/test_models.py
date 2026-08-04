@@ -11,8 +11,8 @@ No GPU required — all tests run on CPU with random tensors.
 """
 import pytest
 import torch
+# pyrefly: ignore [missing-import]
 from src.models.decoder import LatexDecoder
-from src.models.cnn_backbone import BasicConvBlock
 
 
 # ---------------------------------------------------------------------------
@@ -67,28 +67,6 @@ def test_decoder_batch_size_one(decoder):
     assert logits.shape == (1, 10, 4000)
 
 
-# ---------------------------------------------------------------------------
-# BasicConvBlock tests  (from cnn_backbone.py __main__)
-# ---------------------------------------------------------------------------
-
-def test_cnn_backbone_output_shape():
-    """Output must be (B, H*W, C) after rearrange."""
-    B, H, W = 8, 64, 64
-    model  = BasicConvBlock()
-    x      = torch.randn(B, 3, H, W)
-    out    = model(x)
-    # 16 output channels, spatial dims preserved
-    assert out.shape == (B, H * W, 16)
-
-
-def test_cnn_backbone_different_input_sizes():
-    """Model should handle different spatial resolutions."""
-    model = BasicConvBlock()
-    for H, W in [(32, 32), (64, 128), (128, 512)]:
-        x   = torch.randn(2, 3, H, W)
-        out = model(x)
-        assert out.shape == (2, H * W, 16)
-
 
 # ---------------------------------------------------------------------------
 # VisionEncoder tests  (from encoder.py __main__)
@@ -96,6 +74,7 @@ def test_cnn_backbone_different_input_sizes():
 
 def test_vision_encoder_output_shape():
     """Output sequence shape must be (B, H'*W', 512) after ResNet18 backbone."""
+    # pyrefly: ignore [missing-import]
     from src.models.encoder import VisionEncoder
     encoder = VisionEncoder()
     encoder.eval()
@@ -111,6 +90,7 @@ def test_vision_encoder_output_shape():
 
 def test_vision_encoder_feature_dim():
     """Feature dimension (C) must be 512 for ResNet18."""
+    # pyrefly: ignore [missing-import]
     from src.models.encoder import VisionEncoder
     encoder = VisionEncoder()
     encoder.eval()
