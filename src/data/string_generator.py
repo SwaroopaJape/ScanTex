@@ -224,9 +224,8 @@ def generate_valid(max_attempts: int = 50) -> str | None:
 def main(grammar_file: str = "src/data/grammar.py"):
     import os
 
-    # reload grammar if a different path is provided
-    if grammar_file != "src/data/grammar.py":
-        load_grammar(grammar_file)
+    load_grammar(grammar_file)
+    print(f"Grammar loaded: {grammar_file}")
 
     TARGET = 10
     MAX_TOTAL_ATTEMPTS = 200
@@ -303,7 +302,12 @@ def main(grammar_file: str = "src/data/grammar.py"):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="scantex string generator")
-    parser.add_argument("--grammar", type=str, default="src/data/grammar.py", help="path to the grammar file")
+    parser.add_argument(
+        "--grammar",
+        type=str,
+        default="src/data/grammar.py",
+        help="path to the grammar .py file to use for generation (default: src/data/grammar.py)"
+    )
     args = parser.parse_args()
 
     main(grammar_file=args.grammar)
