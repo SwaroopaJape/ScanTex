@@ -69,7 +69,8 @@ def main():
                     if not sym.name.startswith("__ANON"):
                         rhs_parts.append(f"Token('{sym.name}', '{lit}')")
                 else:
-                    out_rhs.append(terminal_to_pattern.get(sym.name, f"<{sym.name}>"))
+                    nt_name = f"__REGEX_{sym.name}"
+                    out_rhs.append(nt_name)
         
         rhs_str = " ".join(rhs_parts)
         sig = f"{lhs} -> {rhs_str}"
@@ -86,6 +87,24 @@ def main():
     for lhs, options in regex_expansions.items():
         for val, count in options:
             rule_data[lhs].append(([val], count))
+
+    # Generate synthetic rules for all regex terminals
+    for term in g.terminals:
+        if term.pattern.type == "re":
+            pattern = term.pattern.value
+            if pattern == "[a-zA-Z]":
+                choices = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            elif pattern == "[0-9]":
+                choices = list("0123456789")
+            elif pattern == "[^}]+":
+                choices = ["with", "respect", "to", "given", "assume", "let", "where", "if", "then", "and", "or", "for", "all"]
+            else:
+                choices = [pattern]
+
+            nt_name = f"__REGEX_{term.name}"
+            # give each expanded choice a base pseudocount of 1.0 to survive Laplace smoothing
+            for c in choices:
+                rule_data[nt_name].append(([c], 1.0))
 
     # Format the Python output
     lines = []

@@ -69,11 +69,29 @@ def main():
                     # critical fix: __ANON_* tokens become e.g. "^{", "_{", "}"
                     out_rhs.append(terminal_to_literal[sym.name])
                 else:
-                    # regex terminal (e.g. /[a-zA-Z]/) — keep the pattern
-                    # string_generator handles these via their parent non-terminal
-                    out_rhs.append(terminal_to_pattern.get(sym.name, f"<{sym.name}>"))
+                    # Regex terminal: point to a synthetic non-terminal that we'll define
+                    nt_name = f"__REGEX_{sym.name}"
+                    out_rhs.append(nt_name)
 
         rule_data[lhs].append(out_rhs)
+
+    # Generate synthetic rules for all regex terminals
+    for term in g.terminals:
+        if term.pattern.type == "re":
+            pattern = term.pattern.value
+            if pattern == "[a-zA-Z]":
+                choices = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            elif pattern == "[0-9]":
+                choices = list("0123456789")
+            elif pattern == "[^}]+":
+                choices = ["with", "respect", "to", "given", "assume", "let", "where", "if", "then", "and", "or", "for", "all"]
+            else:
+                choices = [pattern]
+
+            nt_name = f"__REGEX_{term.name}"
+            non_terminals.add(nt_name)
+            for c in choices:
+                rule_data[nt_name].append([c])
 
     # Format output lines
     lines = [
