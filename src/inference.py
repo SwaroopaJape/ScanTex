@@ -19,10 +19,58 @@ from src.models.encoder import VisionEncoder
 # pyrefly: ignore [missing-import]
 from src.models.decoder import LatexDecoder
 
-def generate(image_tensor, encoder, decoder, tokenizer, device, max_len=100):
+def beam_search_generate(image_tensor, encoder, decoder, tokenizer, device, max_len=100, beam_width=5, alpha=0.7):
     """
-    Greedy Auto-Regressive Decoding.
+    Beam Search Decoding.
     """
+    encoder.eval()
+    decoder.eval()
+    
+    with torch.no_grad():
+        images = image_tensor.unsqueeze(0).to(device)
+        memory = encoder(images)
+        
+        # Beams: list of tuples (score, token_ids)
+        # Score is accumulated log probability
+        beams = [(0.0, [tokenizer.sos_id])]
+        
+        for _ in range(max_len):
+            all_candidates = []
+            
+            for score, token_ids in beams:
+                if token_ids[-1] == tokenizer.eos_id:
+                    all_candidates.append((score, token_ids))
+                    continue
+                    
+                tgt = torch.tensor([token_ids], dtype=torch.long, device=device)
+                logits = decoder(tgt, memory)
+                
+                log_probs = torch.log_softmax(logits[0, -1, :], dim=-1)
+                topk_log_probs, topk_indices = torch.topk(log_probs, beam_width)
+                
+                for log_prob, idx in zip(topk_log_probs, topk_indices):
+                    candidate_score = score + log_prob.item()
+                    candidate_ids = token_ids + [idx.item()]
+                    all_candidates.append((candidate_score, candidate_ids))
+                    
+            # Apply length normalization when ranking candidates
+            ordered = sorted(all_candidates, key=lambda x: x[0] / (len(x[1]) ** alpha), reverse=True)
+            beams = ordered[:beam_width]
+            
+            if all(b[1][-1] == tokenizer.eos_id for b in beams):
+                break
+                
+        best_token_ids = beams[0][1]
+        
+    return tokenizer.decode(best_token_ids)
+
+def generate(image_tensor, encoder, decoder, tokenizer, device, max_len=100, algorithm="greedy", beam_width=5):
+    """
+    Auto-Regressive Decoding.
+    """
+    if algorithm == "beam":
+        return beam_search_generate(image_tensor, encoder, decoder, tokenizer, device, max_len, beam_width)
+        
     encoder.eval()
     decoder.eval()
     

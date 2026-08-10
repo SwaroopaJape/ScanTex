@@ -125,13 +125,21 @@ def main():
         
     print(f"Found {len(lines)} equations in {val_file}.")
     
-    exact_matches = 0
-    total_cer = 0.0
-    total_chars = 0
-    compilation_success = 0
+    def create_buckets():
+        return {
+            "1-10 tokens": {"count": 0, "exact_matches": 0, "total_cer": 0, "total_chars": 0},
+            "11-25 tokens": {"count": 0, "exact_matches": 0, "total_cer": 0, "total_chars": 0},
+            "26-50 tokens": {"count": 0, "exact_matches": 0, "total_cer": 0, "total_chars": 0},
+            "50+ tokens": {"count": 0, "exact_matches": 0, "total_cer": 0, "total_chars": 0},
+        }
+
+    metrics = {
+        "greedy": {"exact_matches": 0, "total_cer": 0.0, "total_chars": 0, "compilation_success": 0, "buckets": create_buckets()},
+        "beam":   {"exact_matches": 0, "total_cer": 0.0, "total_chars": 0, "compilation_success": 0, "buckets": create_buckets()},
+    }
+    
     processed = 0
     
-    # Shuffle so we get a random subset of max_samples
     import random
     random.seed(42)
     random.shuffle(lines)
@@ -143,44 +151,88 @@ def main():
             # Skip invalid latex that can't be rendered
             continue
             
-        pred_latex = generate(img_tensor, encoder, decoder, tokenizer, device, max_len=150)
-        
-        # 1. Exact Match
         gt_clean = latex.replace(" ", "")
-        pred_clean = pred_latex.replace(" ", "")
-        is_em = (gt_clean == pred_clean)
-        if is_em:
-            exact_matches += 1
-            
-        # 2. CER
-        dist = levenshtein_distance(gt_clean, pred_clean)
-        total_cer += dist
-        total_chars += len(gt_clean)
+        token_len = len(tokenizer.encode(latex))
         
-        # 3. Compilation check
-        if check_compiles(pred_latex):
-            compilation_success += 1
+        if token_len <= 10:
+            b_key = "1-10 tokens"
+        elif token_len <= 25:
+            b_key = "11-25 tokens"
+        elif token_len <= 50:
+            b_key = "26-50 tokens"
+        else:
+            b_key = "50+ tokens"
+
+        for algo in ["greedy", "beam"]:
+            pred_latex = generate(img_tensor, encoder, decoder, tokenizer, device, max_len=150, algorithm=algo)
+            pred_clean = pred_latex.replace(" ", "")
+            
+            is_em = (gt_clean == pred_clean)
+            if is_em:
+                metrics[algo]["exact_matches"] += 1
+                
+            dist = levenshtein_distance(gt_clean, pred_clean)
+            metrics[algo]["total_cer"] += dist
+            metrics[algo]["total_chars"] += len(gt_clean)
+            
+            if check_compiles(pred_latex):
+                metrics[algo]["compilation_success"] += 1
+                
+            metrics[algo]["buckets"][b_key]["count"] += 1
+            if is_em:
+                metrics[algo]["buckets"][b_key]["exact_matches"] += 1
+            metrics[algo]["buckets"][b_key]["total_cer"] += dist
+            metrics[algo]["buckets"][b_key]["total_chars"] += len(gt_clean)
             
         processed += 1
         
-        em_rate = (exact_matches / processed) * 100
-        cer = (total_cer / total_chars) * 100 if total_chars > 0 else 0
-        comp_rate = (compilation_success / processed) * 100
-        
-        pbar.set_postfix({"EM": f"{em_rate:.1f}%", "CER": f"{cer:.1f}%", "Comp": f"{comp_rate:.1f}%"})
+        # update pbar with greedy as baseline display
+        em_rate = (metrics["greedy"]["exact_matches"] / processed) * 100
+        cer = (metrics["greedy"]["total_cer"] / metrics["greedy"]["total_chars"]) * 100 if metrics["greedy"]["total_chars"] > 0 else 0
+        pbar.set_postfix({"G-EM": f"{em_rate:.1f}%", "G-CER": f"{cer:.1f}%"})
 
     if processed == 0:
         print("No valid equations processed.")
         sys.exit(0)
         
-    print("\n" + "="*50)
-    print("EVALUATION RESULTS")
-    print("="*50)
-    print(f"Total Samples Evaluated : {processed}")
-    print(f"Exact Match (EM) Rate   : {(exact_matches / processed) * 100:.2f}%")
-    print(f"Character Error Rate    : {(total_cer / max(1, total_chars)) * 100:.2f}%")
-    print(f"Prediction Compile Rate : {(compilation_success / processed) * 100:.2f}%")
-    print("="*50)
+    print(f"Total Samples Evaluated : {processed}\n")
+    
+    print(f"{'Metric':<25} | {'Greedy':<15} | {'Beam Search':<15}")
+    print("-" * 65)
+    
+    for algo in ["greedy", "beam"]:
+        metrics[algo]["em_rate"] = (metrics[algo]["exact_matches"] / processed) * 100
+        metrics[algo]["cer_rate"] = (metrics[algo]["total_cer"] / max(1, metrics[algo]["total_chars"])) * 100
+        metrics[algo]["comp_rate"] = (metrics[algo]["compilation_success"] / processed) * 100
+        
+    print(f"{'Exact Match (EM) Rate':<25} | {metrics['greedy']['em_rate']:>6.2f}%         | {metrics['beam']['em_rate']:>6.2f}%")
+    print(f"{'Character Error Rate':<25} | {metrics['greedy']['cer_rate']:>6.2f}%         | {metrics['beam']['cer_rate']:>6.2f}%")
+    print(f"{'Prediction Compile Rate':<25} | {metrics['greedy']['comp_rate']:>6.2f}%         | {metrics['beam']['comp_rate']:>6.2f}%")
+    
+    print("\n" + "="*65)
+    print("PER-COMPLEXITY BUCKETS (Token Length)")
+    print("="*65)
+    
+    print(f"{'Token Length':<15} | {'Count':<6} | {'G-EM':<6} | {'B-EM':<6} | {'G-CER':<6} | {'B-CER':<6}")
+    print("-" * 65)
+    
+    for b_key in ["1-10 tokens", "11-25 tokens", "26-50 tokens", "50+ tokens"]:
+        count = metrics["greedy"]["buckets"][b_key]["count"]
+        if count == 0:
+            print(f"{b_key:<15} | {count:<6} | {'N/A':<6} | {'N/A':<6} | {'N/A':<6} | {'N/A':<6}")
+        else:
+            g_em = (metrics["greedy"]["buckets"][b_key]["exact_matches"] / count) * 100
+            b_em = (metrics["beam"]["buckets"][b_key]["exact_matches"] / count) * 100
+            
+            g_chars = metrics["greedy"]["buckets"][b_key]["total_chars"]
+            b_chars = metrics["beam"]["buckets"][b_key]["total_chars"]
+            
+            g_cer = (metrics["greedy"]["buckets"][b_key]["total_cer"] / g_chars) * 100 if g_chars > 0 else 0
+            b_cer = (metrics["beam"]["buckets"][b_key]["total_cer"] / b_chars) * 100 if b_chars > 0 else 0
+            
+            print(f"{b_key:<15} | {count:<6} | {g_em:>5.1f}% | {b_em:>5.1f}% | {g_cer:>5.1f}% | {b_cer:>5.1f}%")
+            
+    print("="*65)
 
 if __name__ == "__main__":
     main()

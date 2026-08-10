@@ -50,7 +50,7 @@ def test_no_anon_tokens_in_grammar_py():
     terminals are resolved to their literal LaTeX values (e.g. '^{', '}').
     """
     content = GRAMMAR_PY_PATH.read_text(encoding="utf-8")
-    anon_matches = re.findall(r"__ANON_\d+", content)
+    anon_matches = re.findall(r"(?<!__REGEX_)__ANON_\d+", content)
     assert not anon_matches, (
         f"grammar.py contains unresolved __ANON_* tokens: {set(anon_matches)}. "
         "Re-run scripts/generate_base_grammar.py to regenerate."

@@ -280,6 +280,9 @@ with left_col:
         )
         st.image(image, width='stretch')
     
+    st.markdown('<br>', unsafe_allow_html=True)
+    algorithm = st.radio("Decoding Algorithm", ["Greedy", "Beam Search (width=5)"], horizontal=True)
+    
     run_button = st.button("▶  Run OCR", disabled=(uploaded_file is None))
 
 
@@ -325,7 +328,8 @@ if run_button and uploaded_file is not None:
         img_tensor = transform(img_tensor)
         
         t0 = time.perf_counter()
-        predicted_latex = generate(img_tensor, encoder, decoder, tokenizer, device)
+        algo_str = "beam" if "Beam" in algorithm else "greedy"
+        predicted_latex = generate(img_tensor, encoder, decoder, tokenizer, device, algorithm=algo_str)
         elapsed_ms = int((time.perf_counter() - t0) * 1000)
     
     st.session_state["result_latex"] = predicted_latex

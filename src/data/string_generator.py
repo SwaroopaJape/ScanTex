@@ -111,29 +111,33 @@ _STRUCTURAL_SYMBOLS = {
     "SET_EXPR", "LOGIC_EXPR", "PARTIAL_DERIV", "TEXT_COND",
 }
 
-CONTINUE_PROB_BASE = 0.8  # probability p; continue chance is p^depth
-
-def _generate_atom(depth: int) -> str:
+def _generate_atom(depth: int, current_max_depth: int) -> str:
     # generate a guaranteed-finite atom (variable, number, greek, constant)
     productions, probabilities = rules["ATOM"]
     chosen = random.choices(productions, weights=probabilities, k=1)[0]
-    return "".join(generate(s, depth) for s in chosen)
+    return "".join(generate(s, depth, current_max_depth) for s in chosen)
 
 
 # core recursive generator
 
-def generate(symbol: str = "START", depth: int = 0) -> str:
+def generate(symbol: str = "START", depth: int = 0, current_max_depth: int = -1) -> str:
     # expand a grammar symbol into a concrete latex string
     
+    # Initialize geometric max depth on the first call
+    if current_max_depth == -1:
+        current_max_depth = MAX_DEPTH
+        p = 0.1  # 20% chance to multiply depth
+        while random.random() < p:
+            current_max_depth += MAX_DEPTH
+            
     # terminal: return as-is
     if symbol not in non_terminals:
         return symbol
 
-    # probabilistic and hard depth guard
+    # hard depth guard
     if symbol in _RECURSIVE_SPINE:
-        p_continue = CONTINUE_PROB_BASE ** depth
-        if depth >= MAX_DEPTH or random.random() > p_continue:
-            return _generate_atom(depth)
+        if depth >= current_max_depth:
+            return _generate_atom(depth, current_max_depth)
 
     productions, probabilities = rules[symbol]
     
@@ -142,30 +146,30 @@ def generate(symbol: str = "START", depth: int = 0) -> str:
 
     # special handling for number (uses plus on digit)
     if symbol == "NUMBER":
-        digits = plus(lambda: generate("DIGIT", next_depth), MAX_DIGITS)
+        digits = plus(lambda: generate("DIGIT", next_depth, current_max_depth), MAX_DIGITS)
         return "".join(digits)
 
     # special handling for expr (term followed by star op+term)
     if symbol == "EXPR":
-        first_term = generate("TERM", next_depth)
+        first_term = generate("TERM", next_depth, current_max_depth)
         extras = star(
-            lambda: _gen_additive_tail(next_depth),
+            lambda: _gen_additive_tail(next_depth, current_max_depth),
             MAX_TERMS - 1,
         )
         return first_term + "".join(extras)
 
     # special handling for term (factor followed by star op+factor)
     if symbol == "TERM":
-        first_factor = generate("FACTOR", next_depth)
+        first_factor = generate("FACTOR", next_depth, current_max_depth)
         extras = star(
-            lambda: _gen_multiplicative_tail(next_depth),
+            lambda: _gen_multiplicative_tail(next_depth, current_max_depth),
             MAX_FACTORS - 1,
         )
         return first_factor + "".join(extras)
 
     # general expansion
     chosen = random.choices(productions, weights=probabilities, k=1)[0]
-    parts = [generate(s, next_depth) for s in chosen]
+    parts = [generate(s, next_depth, current_max_depth) for s in chosen]
     return "".join(parts)
 
 
@@ -173,19 +177,19 @@ def generate(symbol: str = "START", depth: int = 0) -> str:
 
 _additive_ops = [" + ", " - ", r" \pm ", r" \mp "]
 
-def _gen_additive_tail(depth: int) -> str:
+def _gen_additive_tail(depth: int, current_max_depth: int) -> str:
     # generate one additive op and term pair for use inside star
     op = random.choice(_additive_ops)
-    term = generate("TERM", depth)
+    term = generate("TERM", depth, current_max_depth)
     return op + term
 
 
 _multiplicative_ops = [r" \cdot ", r" \times "]
 
-def _gen_multiplicative_tail(depth: int) -> str:
+def _gen_multiplicative_tail(depth: int, current_max_depth: int) -> str:
     # generate one multiplicative op and factor pair for use inside star
     op = random.choice(_multiplicative_ops)
-    factor = generate("FACTOR", depth)
+    factor = generate("FACTOR", depth, current_max_depth)
     return op + factor
 
 
