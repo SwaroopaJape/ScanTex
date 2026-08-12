@@ -64,6 +64,28 @@ class MathDataset(Dataset):
                 v2.RandomApply([v2.RandomAffine(degrees=5, translate=(0.02, 0.02), scale=(0.95, 1.05))], p=0.2),
                 v2.RandomApply([v2.ElasticTransform(alpha=20.0, sigma=5.0)], p=0.2)
             ])
+            
+        elif self.mode == "im2latex":
+            data_dir = "data/im2latex_test"
+            images_dir = os.path.join(data_dir, "images")
+            labels_file = os.path.join(data_dir, "labels.txt")
+            
+            if os.path.exists(labels_file):
+                with open(labels_file, "r", encoding="utf-8") as f:
+                    for line in f:
+                        parts = line.strip().split('\t')
+                        if len(parts) == 2:
+                            self.items.append((os.path.join(images_dir, parts[0]), parts[1]))
+            else:
+                print(f"Warning: {labels_file} not found. Dataset is empty.")
+                
+            # No augmentation for benchmark evaluation — we want clean inference
+            self.transform = v2.Compose([
+                v2.ToImage(),
+                v2.Resize((128, 512), antialias=True),
+                v2.ToDtype(torch.float32, scale=True),
+            ])
+
         else:
             raise ValueError(f"Unknown mode: {mode}")
 

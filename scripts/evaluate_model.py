@@ -80,8 +80,14 @@ def render_to_tensor(latex: str, transform):
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate model on validation data.")
-    parser.add_argument("--val-file", type=str, default="data/scraped/val_equations.txt")
+    parser.add_argument(
+        "--mode", type=str, default="custom", choices=["custom", "im2latex"],
+        help="Evaluation dataset: 'custom' uses your scraped val set, 'im2latex' uses the IM2LATEX-100K benchmark."
+    )
+    parser.add_argument("--val-file", type=str, default="data/scraped/val_equations.txt",
+                        help="Path to val equations file (only used when --mode custom).")
     parser.add_argument("--max-samples", type=int, default=1000, help="Max samples to evaluate")
+    parser.add_argument("--output", type=str, default="", help="Path to save the final evaluation results text file.")
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else ("mps" if torch.backends.mps.is_available() else "cpu"))
@@ -115,16 +121,53 @@ def main():
         v2.ToDtype(torch.float32, scale=True)
     ])
     
-    val_file = Path(args.val_file)
-    if not val_file.exists():
-        print(f"ERROR: File {val_file} not found.")
-        sys.exit(1)
-        
-    with open(val_file, "r", encoding="utf-8") as f:
-        lines = [line.strip() for line in f if line.strip()]
-        
-    print(f"Found {len(lines)} equations in {val_file}.")
-    
+    if args.mode == "im2latex":
+        # Load from pre-processed IM2LATEX-100K test set (image + label pairs)
+        im2latex_dir = project_root / "data" / "im2latex_test"
+        labels_file  = im2latex_dir / "labels.txt"
+        images_dir   = im2latex_dir / "images"
+
+        if not labels_file.exists():
+            print(f"ERROR: {labels_file} not found.")
+            print("Run: uv run python scripts/download_im2latex.py")
+            sys.exit(1)
+
+        print(f"[Mode: im2latex] Loading benchmark from {im2latex_dir}")
+        pairs = []
+        with open(labels_file, "r", encoding="utf-8") as f:
+            for line in f:
+                parts = line.strip().split("\t")
+                if len(parts) == 2:
+                    img_path = images_dir / parts[0]
+                    if img_path.exists():
+                        pairs.append((str(img_path), parts[1]))
+
+        import random
+        random.seed(42)
+        random.shuffle(pairs)
+        pairs = pairs[:args.max_samples]
+        lines = None  # not used in im2latex mode
+        print(f"Found {len(pairs)} benchmark images.")
+
+    else:
+        # Custom mode: render from raw LaTeX strings (your scraped val set)
+        val_file = Path(args.val_file)
+        if not val_file.exists():
+            print(f"ERROR: File {val_file} not found.")
+            sys.exit(1)
+
+        print(f"[Mode: custom] Loading val equations from {val_file}")
+        with open(val_file, "r", encoding="utf-8") as f:
+            lines = [line.strip() for line in f if line.strip()]
+
+        import random
+        random.seed(42)
+        random.shuffle(lines)
+        lines = lines[:args.max_samples]
+        pairs = None  # not used in custom mode
+        print(f"Found {len(lines)} equations.")
+
+
     def create_buckets():
         return {
             "1-10 tokens": {"count": 0, "exact_matches": 0, "total_cer": 0, "total_chars": 0},
@@ -142,15 +185,23 @@ def main():
     
     import random
     random.seed(42)
-    random.shuffle(lines)
-    
-    pbar = tqdm(lines)
-    for latex in pbar:
-        img_tensor = render_to_tensor(latex, transform)
-        if img_tensor is None:
-            # Skip invalid latex that can't be rendered
-            continue
-            
+
+    pbar = tqdm(pairs if pairs else lines)
+    for item in pbar:
+        if pairs:
+            # im2latex mode: load directly from pre-rendered PNG
+            img_path, latex = item
+            try:
+                img_tensor = read_image(img_path)[:3, :, :]
+                img_tensor = transform(img_tensor)
+            except Exception:
+                continue
+        else:
+            # custom mode: render latex string on the fly
+            latex = item
+            img_tensor = render_to_tensor(latex, transform)
+            if img_tensor is None:
+                continue
         gt_clean = latex.replace(" ", "")
         token_len = len(tokenizer.encode(latex))
         
@@ -195,31 +246,30 @@ def main():
         print("No valid equations processed.")
         sys.exit(0)
         
-    print(f"Total Samples Evaluated : {processed}\n")
-    
-    print(f"{'Metric':<25} | {'Greedy':<15} | {'Beam Search':<15}")
-    print("-" * 65)
+    log_lines = []
+    log_lines.append(f"Total Samples Evaluated : {processed}\n")
+    log_lines.append(f"{'Metric':<25} | {'Greedy':<15} | {'Beam Search':<15}")
+    log_lines.append("-" * 65)
     
     for algo in ["greedy", "beam"]:
         metrics[algo]["em_rate"] = (metrics[algo]["exact_matches"] / processed) * 100
         metrics[algo]["cer_rate"] = (metrics[algo]["total_cer"] / max(1, metrics[algo]["total_chars"])) * 100
         metrics[algo]["comp_rate"] = (metrics[algo]["compilation_success"] / processed) * 100
         
-    print(f"{'Exact Match (EM) Rate':<25} | {metrics['greedy']['em_rate']:>6.2f}%         | {metrics['beam']['em_rate']:>6.2f}%")
-    print(f"{'Character Error Rate':<25} | {metrics['greedy']['cer_rate']:>6.2f}%         | {metrics['beam']['cer_rate']:>6.2f}%")
-    print(f"{'Prediction Compile Rate':<25} | {metrics['greedy']['comp_rate']:>6.2f}%         | {metrics['beam']['comp_rate']:>6.2f}%")
+    log_lines.append(f"{'Exact Match (EM) Rate':<25} | {metrics['greedy']['em_rate']:>6.2f}%         | {metrics['beam']['em_rate']:>6.2f}%")
+    log_lines.append(f"{'Character Error Rate':<25} | {metrics['greedy']['cer_rate']:>6.2f}%         | {metrics['beam']['cer_rate']:>6.2f}%")
+    log_lines.append(f"{'Prediction Compile Rate':<25} | {metrics['greedy']['comp_rate']:>6.2f}%         | {metrics['beam']['comp_rate']:>6.2f}%")
     
-    print("\n" + "="*65)
-    print("PER-COMPLEXITY BUCKETS (Token Length)")
-    print("="*65)
-    
-    print(f"{'Token Length':<15} | {'Count':<6} | {'G-EM':<6} | {'B-EM':<6} | {'G-CER':<6} | {'B-CER':<6}")
-    print("-" * 65)
+    log_lines.append("\n" + "="*65)
+    log_lines.append("PER-COMPLEXITY BUCKETS (Token Length)")
+    log_lines.append("="*65)
+    log_lines.append(f"{'Token Length':<15} | {'Count':<6} | {'G-EM':<6} | {'B-EM':<6} | {'G-CER':<6} | {'B-CER':<6}")
+    log_lines.append("-" * 65)
     
     for b_key in ["1-10 tokens", "11-25 tokens", "26-50 tokens", "50+ tokens"]:
         count = metrics["greedy"]["buckets"][b_key]["count"]
         if count == 0:
-            print(f"{b_key:<15} | {count:<6} | {'N/A':<6} | {'N/A':<6} | {'N/A':<6} | {'N/A':<6}")
+            log_lines.append(f"{b_key:<15} | {count:<6} | {'N/A':<6} | {'N/A':<6} | {'N/A':<6} | {'N/A':<6}")
         else:
             g_em = (metrics["greedy"]["buckets"][b_key]["exact_matches"] / count) * 100
             b_em = (metrics["beam"]["buckets"][b_key]["exact_matches"] / count) * 100
@@ -230,9 +280,20 @@ def main():
             g_cer = (metrics["greedy"]["buckets"][b_key]["total_cer"] / g_chars) * 100 if g_chars > 0 else 0
             b_cer = (metrics["beam"]["buckets"][b_key]["total_cer"] / b_chars) * 100 if b_chars > 0 else 0
             
-            print(f"{b_key:<15} | {count:<6} | {g_em:>5.1f}% | {b_em:>5.1f}% | {g_cer:>5.1f}% | {b_cer:>5.1f}%")
+            log_lines.append(f"{b_key:<15} | {count:<6} | {g_em:>5.1f}% | {b_em:>5.1f}% | {g_cer:>5.1f}% | {b_cer:>5.1f}%")
             
-    print("="*65)
+    log_lines.append("="*65)
+
+    final_log = "\n".join(log_lines)
+    print("\n" + final_log)
+
+    if args.output:
+        out_path = Path(args.output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write(f"Mode: {args.mode}\n\n")
+            f.write(final_log + "\n")
+        print(f"\nSaved evaluation results to {out_path}")
 
 if __name__ == "__main__":
     main()

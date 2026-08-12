@@ -10,3 +10,5 @@ tqdm
 lark
 requests
 pytest
+datasets
+pillow
