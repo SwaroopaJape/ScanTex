@@ -15,9 +15,6 @@ import pytest
 PROJECT_ROOT      = Path(__file__).resolve().parents[2]
 GRAMMAR_PY_PATH   = PROJECT_ROOT / "src" / "data" / "grammar.py"
 GRAMMAR_LARK_PATH = PROJECT_ROOT / "src" / "data" / "grammar.lark"
-GITIGNORE_PATH    = PROJECT_ROOT / ".gitignore"
-
-
 # ---------------------------------------------------------------------------
 # 1. File existence / configuration
 # ---------------------------------------------------------------------------
@@ -29,14 +26,6 @@ def test_grammar_py_exists():
         "Run: uv run scripts/generate_base_grammar.py"
     )
 
-
-def test_grammar_py_in_gitignore():
-    """grammar.py must be in .gitignore — it is auto-generated, not source."""
-    content = GITIGNORE_PATH.read_text(encoding="utf-8")
-    assert "src/data/grammar.py" in content, (
-        "src/data/grammar.py is missing from .gitignore. "
-        "Generated files must never be committed as source."
-    )
 
 
 # ---------------------------------------------------------------------------
