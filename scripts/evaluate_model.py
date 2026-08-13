@@ -81,12 +81,11 @@ def render_to_tensor(latex: str, transform):
 def main():
     parser = argparse.ArgumentParser(description="Evaluate model on validation data.")
     parser.add_argument(
-        "--mode", type=str, default="custom", choices=["custom", "im2latex"],
-        help="Evaluation dataset: 'custom' uses your scraped val set, 'im2latex' uses the IM2LATEX-100K benchmark."
+        "--mode", type=str, default="wiki", choices=["wiki", "im2latex"],
+        help="Evaluation dataset: 'wiki' uses your scraped val set, 'im2latex' uses the IM2LATEX-100K benchmark."
     )
     parser.add_argument("--val-file", type=str, default="data/scraped/val_equations.txt",
-                        help="Path to val equations file (only used when --mode custom).")
-    parser.add_argument("--max-samples", type=int, default=1000, help="Max samples to evaluate")
+                        help="Path to val equations file (only used when --mode wiki).")
     parser.add_argument("--output", type=str, default="", help="Path to save the final evaluation results text file.")
     args = parser.parse_args()
 
@@ -142,29 +141,21 @@ def main():
                     if img_path.exists():
                         pairs.append((str(img_path), parts[1]))
 
-        import random
-        random.seed(42)
-        random.shuffle(pairs)
-        pairs = pairs[:args.max_samples]
         lines = None  # not used in im2latex mode
         print(f"Found {len(pairs)} benchmark images.")
 
     else:
-        # Custom mode: render from raw LaTeX strings (your scraped val set)
+        # wiki mode: render from raw LaTeX strings (your scraped val set)
         val_file = Path(args.val_file)
         if not val_file.exists():
             print(f"ERROR: File {val_file} not found.")
             sys.exit(1)
 
-        print(f"[Mode: custom] Loading val equations from {val_file}")
+        print(f"[Mode: wiki] Loading val equations from {val_file}")
         with open(val_file, "r", encoding="utf-8") as f:
             lines = [line.strip() for line in f if line.strip()]
 
-        import random
-        random.seed(42)
-        random.shuffle(lines)
-        lines = lines[:args.max_samples]
-        pairs = None  # not used in custom mode
+        pairs = None  # not used in wiki mode
         print(f"Found {len(lines)} equations.")
 
 
@@ -197,7 +188,7 @@ def main():
             except Exception:
                 continue
         else:
-            # custom mode: render latex string on the fly
+            # wiki mode: render latex string on the fly
             latex = item
             img_tensor = render_to_tensor(latex, transform)
             if img_tensor is None:
