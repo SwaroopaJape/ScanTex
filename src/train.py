@@ -39,11 +39,14 @@ def main(cfg: DictConfig):
     # 2. Instantiate Dataset and Tokenizer
     print("\n--- Initializing Data Pipeline ---")
     dataset_mode = cfg.get("mode", "toy")
-    is_finetuning = (dataset_mode == "finetune")
-    
-    if is_finetuning:
+    is_finetuning = (dataset_mode in ("finetune", "mixed"))
+
+    if dataset_mode == "finetune":
         print("Dataset Mode: FINETUNE | Data Dir: data/scraped_train")
         dataset = MathDataset(mode="real", data_dir="data/scraped_train")
+    elif dataset_mode == "mixed":
+        print("Dataset Mode: MIXED | Data Dir: data/mixed_train")
+        dataset = MathDataset(mode="mixed")
     else:
         print(f"Dataset Mode: {dataset_mode.upper()}")
         dataset = MathDataset(mode=dataset_mode)
@@ -92,12 +95,15 @@ def main(cfg: DictConfig):
             decoder.load_state_dict(checkpoint['decoder_state'])
             print("Successfully loaded pretrained weights!")
         else:
-            print(f"Warning: finetune is true but {checkpoint_path} not found.")
-            
-    # 4. Optimization Setup
+            print(f"Warning: finetune/mixed mode set but {checkpoint_path} not found. Training from scratch.")
+
+    # 4. Optimization Setup — use a lower LR for fine-tuning to avoid catastrophic forgetting
+    ft_lr = cfg.learning_rate / 2 if is_finetuning else cfg.learning_rate
+    if is_finetuning:
+        print(f"Fine-tuning LR: {ft_lr} (halved from {cfg.learning_rate} to protect pretrained weights)")
     optimizer = optim.AdamW(
-        list(encoder.parameters()) + list(decoder.parameters()), 
-        lr=cfg.learning_rate
+        list(encoder.parameters()) + list(decoder.parameters()),
+        lr=ft_lr
     )
     
     # Ignore the <pad> token during loss calculation, apply Label Smoothing

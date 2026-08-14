@@ -46,6 +46,3 @@ venv.bak/
 !/data/tokenizer_weights/
 src/data/grammar.py
 **/weighted_grammar.py
-
-# Hydra Outputs
-outputs/

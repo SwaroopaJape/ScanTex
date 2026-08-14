@@ -1,0 +1,4 @@
+batch_size: 96
+learning_rate: 1.0e-05
+epochs: 10
+mode: finetune

@@ -1,0 +1,3 @@
+- mode=real
+- batch_size=96
+- epochs=10

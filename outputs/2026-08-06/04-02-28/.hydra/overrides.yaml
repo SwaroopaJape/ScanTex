@@ -1,0 +1,3 @@
+- mode=real
+- epochs=15
+- batch_size=32
